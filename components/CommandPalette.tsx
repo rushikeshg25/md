@@ -25,12 +25,16 @@ interface CommandPaletteProps {
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
     open, onOpenChange, onOpen, onSave, onDownload, togglePreview, toggleTheme, toggleZenMode, onInsert, isDarkMode
 }) => {
-    // Toggle with Cmd+K
+    // Toggle with Cmd+K and handle Esc
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
             if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
                 onOpenChange(!open);
+            }
+            if (e.key === 'Escape' && open) {
+                e.preventDefault();
+                onOpenChange(false);
             }
         }
         document.addEventListener('keydown', down);
@@ -50,8 +54,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] bg-black/50 backdrop-blur-sm transition-opacity">
-            <Command className={`w-[600px] max-w-[90vw] rounded-xl border shadow-2xl overflow-hidden ${isDarkMode ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-white border-gray-200 text-gray-800'}`}>
+        <div
+            className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] bg-black/50 backdrop-blur-sm transition-opacity"
+            onClick={() => onOpenChange(false)}
+        >
+            <Command
+                className={`w-[600px] max-w-[90vw] rounded-xl border shadow-2xl overflow-hidden ${isDarkMode ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-white border-gray-200 text-gray-800'}`}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className="flex items-center border-b border-neutral-800 px-3" cmdk-input-wrapper="">
                     <Command.Input
                         autoFocus
