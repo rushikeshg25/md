@@ -4,6 +4,7 @@ import React, { forwardRef } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
+import remarkBreaks from 'remark-breaks'; // Added this import
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import 'katex/dist/katex.min.css';
@@ -41,7 +42,7 @@ export const Preview = forwardRef<HTMLDivElement, PreviewProps>(({ content, clas
             className={`h-full w-full overflow-auto p-8 prose max-w-none transition-colors duration-300 ${isDarkMode ? 'prose-invert' : ''} ${className}`}
         >
             <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
+                remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
                 rehypePlugins={[rehypeKatex, rehypeHighlight]}
                 components={components}
             >
