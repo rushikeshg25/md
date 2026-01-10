@@ -8,7 +8,7 @@ import remarkBreaks from 'remark-breaks';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import 'katex/dist/katex.min.css';
-import 'highlight.js/styles/github-dark.css';
+
 import 'github-markdown-css/github-markdown.css';
 
 import { MermaidBlock } from './MermaidBlock';
