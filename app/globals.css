@@ -1,8 +1,31 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
+  /* Light Mode (Default) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f4f6; /* gray-100 */
+  --bg-tertiary: #e5e7eb; /* gray-200 */
+  --text-primary: #111827; /* gray-900 */
+  --text-secondary: #4b5563; /* gray-600 */
+  --border-color: #e5e7eb; /* gray-200 */
+
+  /* Neutral Dark Mode (Overriding default with standard classes, but vars help transition) */
   --background: #ffffff;
   --foreground: #171717;
+}
+
+/* Dark Mode Override */
+.dark {
+  --bg-primary: #0a0a0a; /* neutral-950 */
+  --bg-secondary: #171717; /* neutral-900 */
+  --bg-tertiary: #262626; /* neutral-800 */
+  --text-primary: #f5f5f5; /* neutral-100 */
+  --text-secondary: #a3a3a3; /* neutral-400 */
+  --border-color: #262626; /* neutral-800 */
+
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -10,17 +33,56 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  
+  /* Semantic Colors */
+  --color-canvas: var(--bg-primary);
+  --color-surface: var(--bg-secondary);
+  --color-surface-hover: var(--bg-tertiary);
+  --color-content: var(--text-primary);
+  --color-muted: var(--text-secondary);
+  --color-divider: var(--border-color);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom Scrollbar for a premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Print Styles for Export PDF */
+/* Print Styles for Export PDF */
+@media print {
+     /* Force text color to black for readability on paper */
+    .prose {
+        color: black !important;
+    }
+    .prose * {
+        color: black !important;
+    }
+    .prose-invert {
+        --tw-prose-body: black !important;
+        --tw-prose-headings: black !important;
+        --tw-prose-bold: black !important;
+        --tw-prose-links: black !important;
+        --tw-prose-code: black !important;
+        --tw-prose-pre-code: black !important;
+        --tw-prose-pre-bg: transparent !important;
+    }
 }
