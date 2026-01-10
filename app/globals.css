@@ -86,3 +86,62 @@ body {
         --tw-prose-pre-bg: transparent !important;
     }
 }
+
+/* GitHub Markdown CSS Dark Mode Overrides */
+.dark .markdown-body {
+  color-scheme: dark;
+  --color-canvas-default: transparent;
+  --color-canvas-subtle: #161b22;
+  --color-border-default: #30363d;
+  --color-border-muted: #21262d;
+  --color-neutral-muted: rgba(110, 118, 129, 0.4);
+  --color-accent-fg: #58a6ff;
+  --color-accent-emphasis: #1f6feb;
+  --color-attention-subtle: rgba(187, 128, 9, 0.15);
+  --color-danger-fg: #f85149;
+  
+  /* Text Colors */
+  color: #c9d1d9;
+  
+  /* Reset background to transparent to blend with our app's pane */
+  background-color: transparent !important;
+}
+
+/* Headers in dark mode */
+.dark .markdown-body h1,
+.dark .markdown-body h2,
+.dark .markdown-body h3,
+.dark .markdown-body h4,
+.dark .markdown-body h5,
+.dark .markdown-body h6 {
+  color: #c9d1d9;
+  border-bottom-color: #21262d;
+}
+
+/* Links in dark mode */
+.dark .markdown-body a {
+  color: #58a6ff;
+}
+
+/* Code blocks in dark mode */
+.dark .markdown-body pre,
+.dark .markdown-body code {
+  background-color: #161b22; 
+}
+.dark .markdown-body .highlight pre, 
+.dark .markdown-body pre {
+    background-color: #161b22;
+}
+
+/* Tables in dark mode */
+.dark .markdown-body table tr {
+    background-color: transparent;
+    border-top-color: #21262d;
+}
+.dark .markdown-body table tr:nth-child(2n) {
+    background-color: #161b22;
+}
+.dark .markdown-body table td, 
+.dark .markdown-body table th {
+    border-color: #30363d;
+}
