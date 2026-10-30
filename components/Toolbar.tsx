@@ -78,8 +78,7 @@ export function Toolbar({ filename, status, onInsert, onSave, onOpen, onDownload
                         ))}
                     </div>
                     <div className="toolbar-selectors" role="group" aria-label="Document actions">
-                        <label className="toolbar-control">
-                            <span>Insert</span>
+                        <div className="toolbar-control">
                             <select aria-label="Insert template" value="" onChange={event => {
                                 const template = TEMPLATES.find(item => item.label === event.target.value);
                                 if (template) onInsert(`\n\n${template.source}\n\n`);
@@ -89,9 +88,8 @@ export function Toolbar({ filename, status, onInsert, onSave, onOpen, onDownload
                                     {TEMPLATES.filter(item => item.category === category).map(item => <option key={item.label}>{item.label}</option>)}
                                 </optgroup>)}
                             </select>
-                        </label>
-                        <label className="toolbar-control">
-                            <span>View</span>
+                        </div>
+                        <div className="toolbar-control">
                             <select aria-label="View" value={layout} onChange={event => {
                                 if (event.target.value === 'reading') onReadingMode();
                                 else onLayoutChange(event.target.value as ToolbarProps['layout']);
@@ -101,13 +99,12 @@ export function Toolbar({ filename, status, onInsert, onSave, onOpen, onDownload
                                 <option value="preview">Preview</option>
                                 <option value="reading">Reading mode</option>
                             </select>
-                        </label>
-                        <label className="toolbar-control">
-                            <span>Theme</span>
+                        </div>
+                        <div className="toolbar-control">
                             <select aria-label="Theme" value={theme} onChange={event => onThemeChange(event.target.value as Theme)}>
                                 {THEMES.map(name => <option key={name} value={name}>{THEME_LABELS[name]}</option>)}
                             </select>
-                        </label>
+                        </div>
                     </div>
                 </div>
             </header>
