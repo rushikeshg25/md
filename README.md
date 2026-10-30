@@ -10,7 +10,7 @@ Write Markdown, preview it live, and export a finished document—all in your br
 
 - **Live editing:** CodeMirror with syntax-aware editing, selection-aware formatting, undo/redo, find and replace, synchronized scrolling, and a resizable split view.
 - **Flexible views:** Editor, Split, Preview, and Reading mode, plus Zen mode to hide controls around the current workspace. Mobile layouts use full-width Editor or Preview views.
-- **Themes:** Light, Dark, Sepia, and Midnight, or System to follow your device. Preferences stay in your browser.
+- **Themes:** Light, Dark, Sepia, Midnight, GitHub Light, GitHub Dark, and Nord, or System to follow your device. Preferences stay in your browser.
 - **Rich Markdown:** Tables, task lists, footnotes, alerts, syntax-highlighted code, and KaTeX math. Enable or disable extensions individually.
 - **Diagrams and charts:** Mermaid flowcharts, sequence diagrams, mind maps, Gantt charts, pie charts, and bar/line charts, with ready-to-insert templates and SVG downloads.
 - **Document tools:** Heading outline, anchor links, code-copy buttons, local file import, draft recovery, Markdown downloads, standalone HTML export, and print/PDF.
@@ -22,6 +22,23 @@ Write Markdown, preview it live, and export a finished document—all in your br
 2. Choose a layout from the **View** dropdown beside **Insert…**. The dropdown displays the current view: Editor, Split, or Preview.
 3. Use **Insert…** for chart and Markdown examples. Open **Markdown extensions** to choose which syntax features render.
 4. Use **Save file** or **Download Markdown** to keep a copy. Choose **Export HTML** or **Print or save PDF** for a rendered document.
+
+The toolbar groups the filename and save status with file actions. The highlighted **Commands** button opens the command palette. **Insert**, **View**, and **Theme** have visible labels; formatting tools sit in their own row. On phones, controls stack and formatting tools scroll horizontally. Expanded settings scroll within the toolbar area so the editor remains usable.
+
+### Themes
+
+Choose a theme from **Theme** in the toolbar, or search for its name in the command palette.
+
+| Theme | Appearance |
+| --- | --- |
+| System | Follows your device's light or dark preference |
+| Light / Dark | Neutral palettes for everyday editing |
+| GitHub Light / GitHub Dark | GitHub-inspired surfaces, borders, and accents |
+| Sepia | Warm paper tones |
+| Midnight | Deep navy with blue accents |
+| Nord | Cool slate with pale blue accents |
+
+Themes apply to the toolbar, editor, search panel, rendered document, settings, and command palette. Code and diagrams use the corresponding light or dark rendering style. Print/PDF keeps a light background.
 
 ### Views and focus modes
 
@@ -133,7 +150,7 @@ On Linux, use `bunx playwright install --with-deps chromium firefox webkit` to i
 
 The Playwright suite starts a production server on **port 3100**, which must be free. It covers desktop Chromium/Firefox and mobile Chromium/WebKit profiles. Mobile profiles emulate device layouts; they are not physical-device tests. Failures retain traces in `test-results/`.
 
-Coverage includes document recovery, native input and undo, themes, Markdown extensions, diagrams, file operations, export, command-menu navigation, Reading/Zen modes, and responsive layouts. [GitHub Actions](.github/workflows/checks.yml) runs lint, type, unit, build, and browser checks on pushes and pull requests. See the [dated verification notes](docs/verification.md) for an earlier test run and the macOS WebKit compatibility workaround.
+Coverage includes document recovery, native input and undo, themes, Markdown extensions, diagrams, file operations, export, command-menu navigation, Reading/Zen modes, and responsive layouts. Toolbar checks cover widths from 320 to 1280 pixels, long filenames, expanded settings, keyboard access to scrolled formatting tools, and command-button text contrast across themes. [GitHub Actions](.github/workflows/checks.yml) runs lint, type, unit, build, and browser checks on pushes and pull requests. See the [toolbar verification report](docs/toolbar-verification.md) for the latest local results and the [earlier verification notes](docs/verification.md) for the macOS WebKit compatibility workaround.
 
 ## Rendering boundaries
 
