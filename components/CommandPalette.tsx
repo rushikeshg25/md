@@ -7,6 +7,7 @@ import {
     Maximize, Eye, Sun
 } from 'lucide-react';
 
+import { TEMPLATES } from '@/lib/templates';
 import { EDITOR_TOOLS } from '@/lib/constants';
 
 interface CommandPaletteProps {
@@ -96,6 +97,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         </Command.Item>
                     </Command.Group>
 
+                    <Command.Group heading="Charts and templates" className="mb-2 text-xs font-medium text-neutral-500 px-2">
+                        {TEMPLATES.map(item => <Command.Item key={item.label} className={itemClass}
+                            onSelect={() => run(() => onInsert(`\n\n${item.source}\n\n`))}>{item.label}</Command.Item>)}
+                    </Command.Group>
                     <Command.Group heading="Insert" className="mb-2 text-xs font-medium text-neutral-500 px-2">
                         {EDITOR_TOOLS.map((tool, idx) => (
                             <Command.Item key={idx} onSelect={() => run(() => onInsert(tool.template))} className={itemClass}>

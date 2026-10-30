@@ -3,6 +3,7 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Save, FolderOpen, Download, Eye, Columns, Maximize, FileText, Command as CommandIcon } from 'lucide-react';
 import { EDITOR_TOOLS } from '@/lib/constants';
+import { TEMPLATES } from '@/lib/templates';
 import { THEMES, type Theme } from '@/lib/preferences';
 
 interface ToolbarProps {
@@ -45,6 +46,15 @@ export function Toolbar({ onInsert, onSave, onOpen, onDownload, togglePreview, t
                     ))}
                 </div>
                 <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Document actions">
+                    <select aria-label="Insert template" value="" onChange={event => {
+                        const template = TEMPLATES.find(item => item.label === event.target.value);
+                        if (template) onInsert(`\n\n${template.source}\n\n`);
+                    }} className="rounded border border-divider bg-canvas p-2 text-sm text-content">
+                        <option value="" disabled>Insert…</option>
+                        {['Charts', 'Diagrams', 'Markdown'].map(category => <optgroup key={category} label={category}>
+                            {TEMPLATES.filter(item => item.category === category).map(item => <option key={item.label}>{item.label}</option>)}
+                        </optgroup>)}
+                    </select>
                     <select aria-label="Theme" value={theme} onChange={event => onThemeChange(event.target.value as Theme)}
                         className="rounded border border-divider bg-canvas p-2 text-sm text-content capitalize">
                         {THEMES.map(name => <option key={name} value={name}>{name.charAt(0).toUpperCase() + name.slice(1)}</option>)}

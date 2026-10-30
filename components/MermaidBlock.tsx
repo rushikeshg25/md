@@ -1,5 +1,6 @@
 "use client";
 
+import { downloadFile } from '@/lib/storage';
 import { useEffect, useId, useState } from 'react';
 
 // Mermaid has global configuration. Serialize initialization and rendering together.
@@ -46,6 +47,7 @@ export function MermaidBlock({ chart, isDarkMode }: { chart: string; isDarkMode:
             {!current && <p role="status">Rendering diagram…</p>}
             {current?.error && <p role="alert" className="text-red-500">{current.error}</p>}
             {current?.svg && <div className="overflow-x-auto flex justify-center" dangerouslySetInnerHTML={{ __html: current.svg }} />}
+            {current?.svg && <button className="mt-2 text-sm text-muted print:hidden" onClick={() => downloadFile(current.svg!, 'diagram.svg', 'image/svg+xml')}>Download SVG</button>}
             <details className="mt-2 text-sm" open={!!current?.error}>
                 <summary>Diagram source</summary>
                 <pre><code>{chart}</code></pre>
