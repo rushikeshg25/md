@@ -39,14 +39,14 @@ test('empty drafts and toolbar changes survive reload; formatting supports undo'
 
 test('themes persist, system follows OS, and narrow views stay full width', async ({ page, isMobile }, testInfo) => {
     const theme = page.getByRole('combobox', { name: 'Theme', exact: true });
-    for (const name of ['light', 'dark', 'sepia', 'midnight']) {
+    for (const name of THEMES.filter(name => name !== 'system')) {
         await theme.selectOption(name);
         await expect(page.locator('main')).toHaveAttribute('data-theme', name);
         const colors = await page.evaluate(() => [getComputedStyle(document.querySelector('.cm-editor')!).backgroundColor, getComputedStyle(document.querySelector('main')!).backgroundColor]);
         expect(colors[0]).toBe(colors[1]);
     }
     await page.reload();
-    await expect(theme).toHaveValue('midnight');
+    await expect(theme).toHaveValue('nord');
     await theme.selectOption('system');
     await page.emulateMedia({ colorScheme: 'dark' });
     await expect(page.locator('main')).toHaveAttribute('data-theme', 'dark');
@@ -75,7 +75,7 @@ test('code blocks share one background across themes and print', async ({ page }
     const blocks = page.locator('[data-document] pre > code');
     await expect(blocks).toHaveCount(4);
     const transparent = 'rgba(0, 0, 0, 0)';
-    for (const theme of ['light', 'dark', 'sepia', 'midnight']) {
+    for (const theme of THEMES.filter(name => name !== 'system')) {
         await page.getByRole('combobox', { name: 'Theme', exact: true }).selectOption(theme);
         for (const block of await blocks.all()) {
             await expect(block).toHaveCSS('background-color', transparent);

@@ -59,7 +59,7 @@ export function Toolbar({ filename, status, onInsert, onSave, onOpen, onDownload
                             </Tooltip>
                         ))}
                     </div>
-                    <button aria-label="Command palette" aria-haspopup="dialog" onClick={openCommandPalette} className="command-launch">
+                    <button aria-label="Command palette" aria-haspopup="dialog" onClick={event => { event.currentTarget.focus(); openCommandPalette(); }} className="command-launch">
                         <CommandIcon size={18} aria-hidden="true" /><span>Commands</span><kbd>Ctrl/⌘ K</kbd>
                     </button>
                 </div>
