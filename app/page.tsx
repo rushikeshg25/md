@@ -99,11 +99,8 @@ export default function Home() {
     return (
         <main data-theme={theme} data-layout={effectiveLayout} data-reading={readingMode || undefined} className={`flex flex-col h-dvh ${isDarkMode ? 'dark' : ''} bg-canvas text-content relative print:h-auto print:overflow-visible print:bg-white`}>
             {!zenMode && !readingMode && <>
-                <div className="document-status px-3 py-1 text-xs bg-surface text-muted print:hidden">
-                    <span className="font-medium">{filename}</span><span role="status"> · {exportNotice || message}{warning && ` · ${warning}`}</span>
-                </div>
                 <div className="print:hidden">
-                    <Toolbar onInsert={handleInsert} onSave={handleSave} onOpen={handleOpen} onDownload={handleDownload}
+                    <Toolbar filename={filename} status={`${exportNotice || message}${warning ? ` · ${warning}` : ''}`} onInsert={handleInsert} onSave={handleSave} onOpen={handleOpen} onDownload={handleDownload}
                         onExportHtml={handleExportHtml} onPrint={handlePrint} layout={effectiveLayout} onLayoutChange={setLayout} onReadingMode={() => setReadingMode(true)}
                         isNarrow={isNarrow} onSearch={handleSearch} theme={preferences.theme} onThemeChange={theme => updatePreferences({ theme })}
                         toggleZenMode={() => setZenMode(true)} openCommandPalette={() => setCommandPaletteOpen(true)} />

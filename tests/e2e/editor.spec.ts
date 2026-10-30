@@ -166,7 +166,7 @@ test('portable file fallback imports and downloads the original filename', async
     await page.getByRole('button', { name: 'Open file', exact: true }).click();
     await (await chooser).setFiles({ name: 'imported.md', mimeType: 'text/markdown', buffer: Buffer.from('# Imported\n\nKeep me.') });
     await expect(source(page)).toContainText('# Imported');
-    await expect(page.locator('.document-status')).toContainText('imported.md');
+    await expect(page.getByText('imported.md', { exact: true })).toBeVisible();
     const download = page.waitForEvent('download');
     await source(page).press('ControlOrMeta+s');
     const file = await download;

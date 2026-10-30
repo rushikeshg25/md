@@ -88,6 +88,27 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 }
 .tool-button { padding: 9px; flex-shrink: 0; border-radius: 6px; color: var(--text-secondary); }
 .tool-button:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.toolbar { border-bottom: 1px solid var(--border-color); background: var(--bg-secondary); padding: 12px 16px 8px; }
+.toolbar-main { display: flex; align-items: center; gap: 16px; padding-bottom: 12px; }
+.toolbar-document { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.toolbar-document-icon { display: flex; padding: 9px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); color: var(--accent); }
+.toolbar-document-copy { min-width: 0; }
+.toolbar-filename { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.toolbar .document-status { margin-top: 2px; font-size: 11px; line-height: 1.4; color: var(--text-secondary); }
+.toolbar-file-actions, .toolbar-formatting { display: flex; align-items: center; gap: 2px; }
+.toolbar .tool-button { display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 34px; min-height: 36px; padding: 8px; border-radius: 7px; }
+.toolbar-action { font-size: 12px; font-weight: 500; }
+.toolbar .toolbar-group-start { margin-left: 8px; position: relative; }
+.toolbar-group-start::before { content: ''; position: absolute; left: -5px; top: 9px; bottom: 9px; width: 1px; background: var(--border-color); }
+.command-launch { display: flex; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; min-height: 40px; padding: 8px 12px; border: 1px solid var(--accent); border-radius: 9px; background: color-mix(in srgb, var(--accent) 12%, var(--bg-primary)); color: var(--accent); font-size: 13px; font-weight: 600; }
+.command-launch:hover { background: color-mix(in srgb, var(--accent) 20%, var(--bg-primary)); }
+.command-launch kbd { padding: 2px 5px; border-radius: 4px; background: var(--bg-primary); font: 10px ui-monospace, monospace; white-space: nowrap; }
+.toolbar-editor-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 8px; border-top: 1px solid var(--border-color); }
+.toolbar-formatting { min-width: 0; max-width: 100%; overflow-x: auto; padding: 4px; }
+.toolbar-selectors { display: flex; gap: 10px; }
+.toolbar-control { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.toolbar-control > span { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); }
+.toolbar-control select { max-width: 170px; min-width: 110px; min-height: 34px; padding: 5px 8px; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-primary); color: var(--text-primary); font-size: 12px; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 main .cm-editor, main .cm-gutters { background: var(--bg-primary); color: var(--text-primary); }
@@ -332,10 +353,15 @@ code.hljs {
 .command-footer { display: flex; flex-wrap: wrap; gap: 16px; padding: 10px 18px; border-top: 1px solid var(--border-color); font-size: 11px; color: var(--text-secondary); background: var(--bg-secondary); }
 .document-status { overflow-wrap: anywhere; }
 @media (max-width: 767px) {
-  .toolbar { gap: 6px; }
-  .toolbar > [aria-label="Formatting"] { width: 100%; }
-  .toolbar > [aria-label="Document actions"] { width: 100%; }
-  .toolbar select { padding: 6px; }
+  .toolbar { padding: 10px 12px 6px; }
+  .toolbar-main { flex-wrap: wrap; gap: 10px; padding-bottom: 6px; }
+  .toolbar-document { flex-basis: calc(100% - 150px); }
+  .toolbar-file-actions { order: 3; width: 100%; }
+  .command-launch kbd { display: none; }
+  .toolbar-editor-row { gap: 8px; }
+  .toolbar-selectors { order: -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
+  .toolbar-control select { width: 100%; min-width: 0; max-width: none; min-height: 38px; }
+  .toolbar-formatting { width: 100%; }
   .tool-button { padding: 10px; }
   .preview-pane > div { padding: 16px; }
 }
