@@ -10,7 +10,7 @@ import {
 import {
     Save, FolderOpen, Download, Sun, Moon, Eye, Columns, Maximize, Minimize, FileText, Command as CommandIcon
 } from 'lucide-react';
-import { clsx } from 'clsx';
+import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import { EDITOR_TOOLS } from '@/lib/constants';
@@ -33,7 +33,7 @@ interface ToolbarProps {
 export const Toolbar: React.FC<ToolbarProps> = ({
     onInsert, onSave, onOpen, onDownload, togglePreview, toggleTheme, toggleZenMode, openCommandPalette, showPreview, isDarkMode, zenMode, className
 }) => {
-    const cn = (...inputs: any[]) => twMerge(clsx(inputs));
+    const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
     return (
         <TooltipProvider>
@@ -43,6 +43,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                         <Tooltip key={idx}>
                             <TooltipTrigger asChild>
                                 <button
+                                    aria-label={tool.label}
+                                    onMouseDown={e => e.preventDefault()}
                                     onClick={() => onInsert(tool.template)}
                                     className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors"
                                 >
@@ -59,7 +61,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 <div className="flex items-center gap-1">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button onClick={toggleTheme} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
+                            <button aria-label="Toggle theme" onClick={toggleTheme} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
                                 {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
                             </button>
                         </TooltipTrigger>
@@ -72,7 +74,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button onClick={onOpen} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
+                            <button aria-label="Open file" onClick={onOpen} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
                                 <FolderOpen size={18} />
                             </button>
                         </TooltipTrigger>
@@ -83,7 +85,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button onClick={openCommandPalette} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
+                            <button aria-label="Command palette" onClick={openCommandPalette} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
                                 <CommandIcon size={18} />
                             </button>
                         </TooltipTrigger>
@@ -95,7 +97,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button onClick={onSave} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
+                            <button aria-label="Save file" onClick={onSave} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
                                 <Save size={18} />
                             </button>
                         </TooltipTrigger>
@@ -106,7 +108,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button onClick={onDownload} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
+                            <button aria-label="Download Markdown" onClick={onDownload} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
                                 <Download size={18} />
                             </button>
                         </TooltipTrigger>
@@ -117,7 +119,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button onClick={() => window.print()} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
+                            <button aria-label="Print or save PDF" onClick={() => window.print()} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
                                 <FileText size={18} />
                             </button>
                         </TooltipTrigger>
@@ -128,7 +130,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button onClick={togglePreview} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
+                            <button aria-label="Toggle preview" onClick={togglePreview} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
                                 {showPreview ? <Columns size={18} /> : <Eye size={18} />}
                             </button>
                         </TooltipTrigger>
@@ -141,7 +143,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button onClick={toggleZenMode} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
+                            <button aria-label="Toggle Zen mode" onClick={toggleZenMode} className="p-2 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors">
                                 {zenMode ? <Minimize size={18} /> : <Maximize size={18} />}
                             </button>
                         </TooltipTrigger>

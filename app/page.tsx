@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { EditorSelection } from '@codemirror/state';
+import type { EditorView } from '@codemirror/view';
+import { formatSelection } from '@/lib/editing';
+import type { EditorStats } from '@/components/Editor';
 import { Editor } from '@/components/Editor';
 import { Preview } from '@/components/Preview';
 import { Toolbar } from '@/components/Toolbar';
@@ -17,11 +21,31 @@ export default function Home() {
         ready,
         message,
         handleChange,
-        handleInsert,
         handleOpen,
         handleSave,
         handleDownload
     } = useMarkdownFile();
+
+    const editorView = useRef<EditorView | null>(null);
+    const handleInsert = useCallback((template: string) => {
+        const view = editorView.current;
+        if (!view) return;
+        view.dispatch(view.state.changeByRange(range => {
+            const insert = formatSelection(template, view.state.sliceDoc(range.from, range.to));
+            return { changes: { from: range.from, to: range.to, insert }, range: EditorSelection.cursor(range.from + insert.length) };
+        }));
+        view.focus();
+    }, []);
+    useEffect(() => {
+        const save = (event: KeyboardEvent) => {
+            if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
+                event.preventDefault();
+                void handleSave();
+            }
+        };
+        window.addEventListener('keydown', save);
+        return () => window.removeEventListener('keydown', save);
+    }, [handleSave]);
 
     const [showPreview, setShowPreview] = useState(true);
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -35,14 +59,14 @@ export default function Home() {
     const { editorRef, previewRef, handleScroll } = useScrollSync();
     const { width: editorWidth, startResizing } = useResizable(50);
 
-    const handleStats = (s: any) => {
+    const handleStats = useCallback((s: EditorStats) => {
         setStats(prev => {
             if (prev.line === s.line && prev.col === s.col && prev.wordCount === s.wordCount && prev.charCount === s.charCount) {
                 return prev;
             }
             return s;
         });
-    };
+    }, []);
 
     // Zen Mode Esc Listener
     useEffect(() => {
@@ -108,6 +132,7 @@ export default function Home() {
                 >
                     {ready && <Editor
                         ref={editorRef}
+                        onCreateEditor={view => { editorView.current = view; }}
                         value={content}
                         onChange={handleChange}
                         onScroll={(e) => handleScroll('editor', e)}

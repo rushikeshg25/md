@@ -6,7 +6,7 @@ import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { EditorView } from '@codemirror/view';
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 
-interface EditorStats {
+export interface EditorStats {
     line: number;
     col: number;
     wordCount: number;
@@ -14,6 +14,7 @@ interface EditorStats {
 }
 
 interface EditorProps {
+    onCreateEditor?: (view: EditorView) => void;
     value: string;
     onChange: (value: string) => void;
     className?: string;
@@ -22,7 +23,7 @@ interface EditorProps {
     onStatistics?: (stats: EditorStats) => void; // New prop
 }
 
-export const Editor = forwardRef<HTMLDivElement, EditorProps>(({ value, onChange, className, onScroll, isDarkMode, onStatistics }, ref) => {
+export const Editor = forwardRef<HTMLDivElement, EditorProps>(({ value, onCreateEditor, onChange, className, onScroll, isDarkMode, onStatistics }, ref) => {
     const handleChange = useCallback((val: string) => {
         onChange(val);
     }, [onChange]);
@@ -61,6 +62,8 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(({ value, onChange
             style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff' }}
         >
             <CodeMirror
+                onCreateEditor={onCreateEditor}
+                aria-label="Markdown source"
                 value={value}
                 height="100%"
                 extensions={[

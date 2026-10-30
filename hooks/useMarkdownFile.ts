@@ -27,7 +27,6 @@ export const useMarkdownFile = () => {
     }, [content, filename, ready]);
 
     const handleChange = useCallback((value: string) => setContent(value), []);
-    const handleInsert = useCallback((template: string) => setContent(previous => previous + template), []);
     const handleOpen = useCallback(async () => {
         if (content && !window.confirm('Replace the current document? Download a copy first if you need to keep it.')) return;
         try {
@@ -48,5 +47,5 @@ export const useMarkdownFile = () => {
     }, [content, filename]);
     const handleDownload = useCallback(() => downloadFile(content, filename), [content, filename]);
 
-    return { content, filename, ready, message, handleChange, handleInsert, handleOpen, handleSave, handleDownload };
+    return { content, filename, ready, message, handleChange, handleOpen, handleSave, handleDownload };
 };
