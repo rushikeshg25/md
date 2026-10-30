@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { shortcut } from './keyboard';
 import { readFile } from 'node:fs/promises';
 import { TEMPLATES } from '../../lib/templates';
 import { THEMES } from '../../lib/preferences';
@@ -7,7 +8,7 @@ const source = (page: Page) => page.getByRole('textbox', { name: 'Markdown sourc
 async function write(page: Page, text: string) {
     await page.getByRole('combobox', { name: 'View', exact: true }).selectOption('editor');
     await source(page).click();
-    await source(page).press('ControlOrMeta+A');
+    await source(page).press(await shortcut(page, 'A'));
     if (text) await page.keyboard.insertText(text);
     else await page.keyboard.press('Backspace');
     await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('markdown-editor-draft') ?? '{}').content)).toBe(text);
@@ -23,10 +24,10 @@ test.beforeEach(async ({ page }) => {
 
 test('empty drafts and toolbar changes survive reload; formatting supports undo', async ({ page }) => {
     await write(page, 'selected words');
-    await source(page).press('ControlOrMeta+A');
+    await source(page).press(await shortcut(page, 'A'));
     await page.getByRole('button', { name: 'Bold', exact: true }).click();
     await expect(source(page)).toHaveText('**selected words**');
-    await source(page).press('ControlOrMeta+z');
+    await source(page).press(await shortcut(page, 'z'));
     await expect(source(page)).toHaveText('selected words');
     await write(page, '');
     await page.reload();
@@ -117,10 +118,10 @@ test('reading mode hides editing controls and restores the previous view', async
     }
     await view.selectOption('editor');
     await expect(source(page)).toContainText('Keep **this document**.');
-    await source(page).press('ControlOrMeta+End');
+    await source(page).press(await shortcut(page, 'End'));
     await page.keyboard.insertText(' Still editable.');
     await expect(source(page)).toContainText('Still editable.');
-    await source(page).press('ControlOrMeta+z');
+    await source(page).press(await shortcut(page, 'z'));
     await expect(source(page)).not.toContainText('Still editable.');
 });
 
@@ -168,7 +169,7 @@ test('portable file fallback imports and downloads the original filename', async
     await expect(source(page)).toContainText('# Imported');
     await expect(page.getByText('imported.md', { exact: true })).toBeVisible();
     const download = page.waitForEvent('download');
-    await source(page).press('ControlOrMeta+s');
+    await source(page).press(await shortcut(page, 's'));
     const file = await download;
     expect(file.suggestedFilename()).toBe('imported.md');
     expect(await readFile((await file.path())!, 'utf8')).toBe('# Imported\n\nKeep me.');
@@ -183,7 +184,7 @@ test('storage failures remain visible and do not erase the editor', async ({ pag
         };
     });
     await source(page).click();
-    await source(page).press('ControlOrMeta+A');
+    await source(page).press(await shortcut(page, 'A'));
     await page.keyboard.insertText('Important unsaved document');
     await expect(page.getByRole('status')).toContainText('could not be saved');
     await expect(source(page)).toHaveText('Important unsaved document');
@@ -202,7 +203,7 @@ test('command palette traps focus, filters commands and restores focus', async (
     await expect(dialog).toBeHidden();
     await expect(opener).toBeFocused();
     await source(page).click();
-    await source(page).press('ControlOrMeta+k');
+    await source(page).press(await shortcut(page, 'k'));
     await expect(dialog).toBeVisible();
     await dialog.getByRole('combobox').fill('Pie chart');
     await page.keyboard.press('Enter');
@@ -214,7 +215,7 @@ test('command palette controls views, themes and extensions, including from read
     await write(page, '# Commands\n\n$x^2$');
     const dialog = page.getByRole('dialog', { name: 'Command palette' });
     const open = async () => {
-        await page.keyboard.press('ControlOrMeta+k');
+        await page.keyboard.press(await shortcut(page, 'k'));
         await expect(dialog).toBeVisible();
         await expect(dialog.getByRole('combobox')).toBeFocused();
     };
