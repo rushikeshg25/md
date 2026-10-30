@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback, useDeferredValue } from 'react';
 import { EditorSelection } from '@codemirror/state';
 import type { EditorView } from '@codemirror/view';
+import { buildHtmlDocument, renderedDocumentHtml, exportFilename } from '@/lib/export';
+import { downloadFile } from '@/lib/storage';
 import { formatSelection } from '@/lib/editing';
 import type { EditorStats } from '@/components/Editor';
 import { Editor } from '@/components/Editor';
@@ -62,6 +64,21 @@ export default function Home() {
     const { editorRef, previewRef, handleScroll } = useScrollSync();
     const scrollEditor = useCallback((target: HTMLElement) => handleScroll('editor', target), [handleScroll]);
     const scrollPreview = useCallback((event: React.UIEvent<HTMLDivElement>) => handleScroll('preview', event.currentTarget), [handleScroll]);
+    const [exportNotice, setExportNotice] = useState('');
+    const exportReady = () => {
+        const article = previewRef.current?.querySelector<HTMLElement>('[data-document]');
+        if (!article || previewContent !== content || article.querySelector('[aria-busy="true"]')) {
+            setExportNotice('Preview is still rendering. Try exporting again in a moment.');
+            return null;
+        }
+        setExportNotice('');
+        return article;
+    };
+    const handleExportHtml = () => {
+        const article = exportReady();
+        if (article) downloadFile(buildHtmlDocument(filename, renderedDocumentHtml(article)), exportFilename(filename), 'text/html;charset=utf-8');
+    };
+    const handlePrint = () => { if (exportReady()) window.print(); };
     const { width: editorWidth, startResizing } = useResizable(50);
 
     const handleStats = useCallback((s: EditorStats) => {
@@ -86,7 +103,7 @@ export default function Home() {
 
     return (
         <main data-theme={theme} className={`flex flex-col h-dvh ${isDarkMode ? 'dark' : ''} bg-canvas text-content transition-colors duration-300 relative print:h-auto print:overflow-visible print:bg-white`}>
-            <div role="status" className="px-3 py-1 text-xs bg-surface text-muted print:hidden">{filename} · {message}{warning && ` · ${warning}`}</div>
+            <div role="status" className="px-3 py-1 text-xs bg-surface text-muted print:hidden">{filename} · {exportNotice || message}{warning && ` · ${warning}`}</div>
             {/* Toolbar hidden in Zen Mode and Print */}
             {!zenMode && (
                 <div className="print:hidden">
@@ -95,6 +112,8 @@ export default function Home() {
                         onSave={handleSave}
                         onOpen={handleOpen}
                         onDownload={handleDownload}
+                        onExportHtml={handleExportHtml}
+                        onPrint={handlePrint}
                         togglePreview={() => setShowPreview(!showPreview)}
                         theme={preferences.theme}
                         onThemeChange={theme => updatePreferences({ theme })}
@@ -125,6 +144,8 @@ export default function Home() {
                 onOpen={handleOpen}
                 onSave={handleSave}
                 onDownload={handleDownload}
+                onExportHtml={handleExportHtml}
+                onPrint={handlePrint}
                 togglePreview={() => setShowPreview(!showPreview)}
                 toggleTheme={() => updatePreferences({ theme: isDarkMode ? 'light' : 'dark' })}
                 toggleZenMode={() => setZenMode(!zenMode)}
@@ -147,8 +168,8 @@ export default function Home() {
                     />}
                 </div>
 
-                {showPreview && (
-                    <>
+                <>
+                        {showPreview && (
                         <div
                             className={`w-1 cursor-col-resize flex flex-col justify-center items-center group absolute top-0 bottom-0 z-10 transition-colors hover:bg-blue-500 ${isDarkMode ? 'bg-neutral-800' : 'bg-gray-200'} print:hidden`}
                             style={{ left: `${editorWidth}%` }}
@@ -157,8 +178,9 @@ export default function Home() {
                             <div className={`h-8 w-1 rounded-full ${isDarkMode ? 'bg-neutral-600 group-hover:bg-blue-300' : 'bg-gray-400 group-hover:bg-blue-400'}`} />
                         </div>
 
+                        )}
                         <div
-                            className="h-full bg-surface print:bg-white print:w-full print:h-auto print:absolute print:top-0 print:left-0 print:m-0 print:z-50"
+                            className={`preview-pane h-full min-w-0 bg-canvas ${showPreview ? "" : "hidden"} print:block print:w-full print:h-auto`}
                             style={{ width: `${100 - editorWidth}%`, marginLeft: '4px' }}
                         >
                             <Preview
@@ -169,8 +191,7 @@ export default function Home() {
                                 isDarkMode={isDarkMode}
                             />
                         </div>
-                    </>
-                )}
+                </>
             </div>
 
             {/* StatusBar hidden in Zen Mode, or can be kept minimal - Hidden in Print */}

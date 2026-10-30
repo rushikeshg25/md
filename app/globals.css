@@ -261,3 +261,23 @@ code.hljs {
 .markdown-body .markdown-alert-caution { border-left-color: #cf222e; }
 .markdown-body .code-block pre { padding-top: 3rem; }
 .markdown-body :is(h1,h2,h3,h4,h5,h6) { scroll-margin-top: 1rem; }
+
+@media print {
+  main { display: block !important; height: auto !important; background: white !important; color: #111 !important; }
+  .preview-pane { display: block !important; width: 100% !important; height: auto !important; margin: 0 !important; }
+  .preview-pane > div { height: auto !important; overflow: visible !important; padding: 0 !important; }
+  main .markdown-body {
+    --text-primary: #111; --text-secondary: #444; --accent: #0969da;
+    --bg-primary: #fff; --bg-secondary: #f6f8fa; --bg-tertiary: #eee; --border-color: #bbb;
+    color-scheme: light; color: #111 !important; background: white !important;
+  }
+  .document-outline, .code-copy, .diagram-block details, .diagram-block button { display: none !important; }
+  .markdown-body pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .markdown-body .code-block pre { padding-top: 1rem; }
+  .markdown-body :is(h1,h2,h3) { break-after: avoid; }
+  .diagram-block, .markdown-body img { break-inside: avoid; }
+  .diagram-block svg text, .diagram-block .label, .diagram-block foreignObject * { fill: #111 !important; color: #111 !important; }
+  .diagram-block .node rect, .diagram-block .node polygon { fill: #fff !important; stroke: #444 !important; }
+  .markdown-body .hljs { color: #111 !important; background: #f6f8fa !important; }
+  .markdown-body .hljs span { color: #111 !important; }
+}

@@ -11,6 +11,8 @@ interface ToolbarProps {
     onSave: () => void;
     onOpen: () => void;
     onDownload: () => void;
+    onExportHtml: () => void;
+    onPrint: () => void;
     togglePreview: () => void;
     toggleZenMode: () => void;
     openCommandPalette: () => void;
@@ -19,13 +21,14 @@ interface ToolbarProps {
     onThemeChange: (theme: Theme) => void;
 }
 
-export function Toolbar({ onInsert, onSave, onOpen, onDownload, togglePreview, toggleZenMode, openCommandPalette, showPreview, theme, onThemeChange }: ToolbarProps) {
+export function Toolbar({ onInsert, onSave, onOpen, onDownload, onExportHtml, onPrint, togglePreview, toggleZenMode, openCommandPalette, showPreview, theme, onThemeChange }: ToolbarProps) {
     const actions = [
         { label: 'Open file', icon: FolderOpen, action: onOpen },
         { label: 'Command palette', icon: CommandIcon, action: openCommandPalette },
         { label: 'Save file', icon: Save, action: onSave },
         { label: 'Download Markdown', icon: Download, action: onDownload },
-        { label: 'Print or save PDF', icon: FileText, action: () => window.print() },
+        { label: 'Export HTML', icon: FileText, action: onExportHtml },
+        { label: 'Print or save PDF', icon: FileText, action: onPrint },
         { label: showPreview ? 'Hide preview' : 'Show preview', icon: showPreview ? Columns : Eye, action: togglePreview },
         { label: 'Zen mode', icon: Maximize, action: toggleZenMode },
     ];

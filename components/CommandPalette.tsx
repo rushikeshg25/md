@@ -16,6 +16,8 @@ interface CommandPaletteProps {
     onOpen: () => void;
     onSave: () => void;
     onDownload: () => void;
+    onExportHtml: () => void;
+    onPrint: () => void;
     togglePreview: () => void;
     toggleTheme: () => void;
     toggleZenMode: () => void;
@@ -24,7 +26,7 @@ interface CommandPaletteProps {
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
-    open, onOpenChange, onOpen, onSave, onDownload, togglePreview, toggleTheme, toggleZenMode, onInsert, isDarkMode
+    open, onOpenChange, onOpen, onSave, onDownload, onExportHtml, onPrint, togglePreview, toggleTheme, toggleZenMode, onInsert, isDarkMode
 }) => {
     // Toggle with Cmd+K and handle Esc
     useEffect(() => {
@@ -83,6 +85,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         <Command.Item onSelect={() => run(onDownload)} className={itemClass}>
                             <Download size={14} /> Download .md
                         </Command.Item>
+                        <Command.Item onSelect={() => run(onExportHtml)} className={itemClass}>Export HTML</Command.Item>
+                        <Command.Item onSelect={() => run(onPrint)} className={itemClass}>Print or save PDF</Command.Item>
                     </Command.Group>
 
                     <Command.Group heading="View" className="mb-2 text-xs font-medium text-neutral-500 px-2">
