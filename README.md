@@ -33,6 +33,10 @@ bun run build
 bun run start
 ```
 
+## Site identity and link previews
+
+`app/icon.svg` is the favicon source, with `app/favicon.ico` and `app/apple-icon.png` as browser and Apple touch variants. `app/opengraph-image.tsx` generates the 1200×630 sharing card at build time. Titles, descriptions and the production URL (`https://md.rushikesh.live`) are set in `app/layout.tsx`; update that URL and the card's domain label when hosting on another domain. Sharing apps can cache old previews after deployment.
+
 ## Verification
 
 ```sh
