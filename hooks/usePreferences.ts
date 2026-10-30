@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useMediaQuery } from './useMediaQuery';
-import { DEFAULT_PREFERENCES, PREFERENCES_KEY, parsePreferences, type Preferences } from '@/lib/preferences';
+import { DEFAULT_PREFERENCES, PREFERENCES_KEY, parsePreferences, isDarkTheme, type Preferences } from '@/lib/preferences';
 export function usePreferences() {
     const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
     const [warning, setWarning] = useState('');
@@ -19,5 +19,5 @@ export function usePreferences() {
         catch { setWarning('Preferences cannot be saved in this browser.'); }
     }, [preferences]);
     const theme = preferences.theme === 'system' ? (systemDark ? 'dark' : 'light') : preferences.theme;
-    return { preferences, updatePreferences, theme, isDarkMode: theme === 'dark' || theme === 'midnight', warning };
+    return { preferences, updatePreferences, theme, isDarkMode: isDarkTheme(theme), warning };
 }

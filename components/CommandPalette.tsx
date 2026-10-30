@@ -5,7 +5,7 @@ import { Command } from 'cmdk';
 import { Search, FolderOpen, Save, Download, FileCode, Printer, PanelLeft, Columns2, Eye, BookOpen, Maximize, Palette, Puzzle, ChartNoAxesCombined, Workflow, FileText, Check, type LucideIcon } from 'lucide-react';
 import { TEMPLATES } from '@/lib/templates';
 import { EDITOR_TOOLS } from '@/lib/constants';
-import { THEMES, EXTENSIONS, type Theme, type Preferences } from '@/lib/preferences';
+import { THEMES, THEME_LABELS, EXTENSIONS, type Theme, type Preferences } from '@/lib/preferences';
 
 type Layout = 'editor' | 'split' | 'preview';
 interface CommandPaletteProps {
@@ -88,7 +88,7 @@ export function CommandPalette({ open, onOpenChange, onOpen, onSave, onDownload,
             })),
         })),
         { label: 'Themes', items: THEMES.map(name => ({
-            label: `${name.charAt(0).toUpperCase() + name.slice(1)} theme`,
+            label: `${THEME_LABELS[name]} theme`,
             description: name === 'system' ? 'Follow your device appearance' : undefined,
             icon: Palette, active: preferences.theme === name, action: () => onPreferencesChange({ theme: name }),
         })) },

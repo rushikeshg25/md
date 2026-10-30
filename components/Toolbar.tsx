@@ -4,7 +4,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { Save, FolderOpen, Download, Search, Maximize, FileText, Command as CommandIcon } from 'lucide-react';
 import { EDITOR_TOOLS } from '@/lib/constants';
 import { TEMPLATES } from '@/lib/templates';
-import { THEMES, type Theme } from '@/lib/preferences';
+import { THEMES, THEME_LABELS, type Theme } from '@/lib/preferences';
 
 interface ToolbarProps {
     onInsert: (template: string) => void;
@@ -73,7 +73,7 @@ export function Toolbar({ onInsert, onSave, onOpen, onDownload, onExportHtml, on
                     </select>
                     <select aria-label="Theme" value={theme} onChange={event => onThemeChange(event.target.value as Theme)}
                         className="rounded border border-divider bg-canvas p-2 text-sm text-content capitalize">
-                        {THEMES.map(name => <option key={name} value={name}>{name.charAt(0).toUpperCase() + name.slice(1)}</option>)}
+                        {THEMES.map(name => <option key={name} value={name}>{THEME_LABELS[name]}</option>)}
                     </select>
                     {actions.map(({ label, icon: Icon, action }) => (
                         <Tooltip key={label}>

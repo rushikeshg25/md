@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { TEMPLATES } from '../../lib/templates';
+import { THEMES } from '../../lib/preferences';
 
 const source = (page: Page) => page.getByRole('textbox', { name: 'Markdown source', exact: true });
 async function write(page: Page, text: string) {
@@ -237,7 +238,7 @@ test('command palette controls views, themes and extensions, including from read
     await expect(page.locator('main')).toHaveAttribute('data-theme', 'midnight');
     await open();
     await dialog.getByRole('combobox').fill('theme');
-    await expect(dialog.getByRole('option')).toHaveCount(5);
+    await expect(dialog.getByRole('option')).toHaveCount(THEMES.length);
     await expect(dialog.getByRole('option', { name: 'Midnight theme', exact: true })).toContainText('Current');
     await page.screenshot({ path: testInfo.outputPath('command-menu-midnight.png'), fullPage: true });
     await page.keyboard.press('Escape');

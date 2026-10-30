@@ -1,5 +1,10 @@
-export const THEMES = ['system', 'light', 'dark', 'sepia', 'midnight'] as const;
+export const THEMES = ['system', 'light', 'dark', 'sepia', 'midnight', 'github-light', 'github-dark', 'nord'] as const;
 export type Theme = typeof THEMES[number];
+export const THEME_LABELS: Record<Theme, string> = {
+    system: 'System', light: 'Light', dark: 'Dark', sepia: 'Sepia', midnight: 'Midnight',
+    'github-light': 'GitHub Light', 'github-dark': 'GitHub Dark', nord: 'Nord',
+};
+export const isDarkTheme = (theme: Theme) => ['dark', 'midnight', 'github-dark', 'nord'].includes(theme);
 export const PREFERENCES_KEY = 'markdown-editor-preferences';
 export const EXTENSIONS = [
     { key: 'gfm', label: 'GitHub Markdown', description: 'Tables, task lists, strikethrough, autolinks and footnotes' },
