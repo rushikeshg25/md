@@ -12,6 +12,7 @@ import { StatusBar } from '@/components/StatusBar';
 import { CommandPalette } from '@/components/CommandPalette';
 import { useScrollSync } from '@/hooks/useScrollSync';
 import { useResizable } from '@/hooks/useResizable';
+import { usePreferences } from '@/hooks/usePreferences';
 import { useMarkdownFile } from '@/hooks/useMarkdownFile';
 
 export default function Home() {
@@ -49,7 +50,7 @@ export default function Home() {
     }, [handleSave]);
 
     const [showPreview, setShowPreview] = useState(true);
-    const [isDarkMode, setIsDarkMode] = useState(true);
+    const { preferences, updatePreferences, theme, isDarkMode, warning } = usePreferences();
     const [zenMode, setZenMode] = useState(false); // Zen Mode state
     const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
@@ -83,8 +84,8 @@ export default function Home() {
     }, [zenMode]);
 
     return (
-        <main className={`flex flex-col h-screen ${isDarkMode ? 'dark' : ''} bg-canvas text-content transition-colors duration-300 relative print:h-auto print:overflow-visible print:bg-white`}>
-            <div role="status" className="px-3 py-1 text-xs bg-surface text-muted print:hidden">{filename} · {message}</div>
+        <main data-theme={theme} className={`flex flex-col h-dvh ${isDarkMode ? 'dark' : ''} bg-canvas text-content transition-colors duration-300 relative print:h-auto print:overflow-visible print:bg-white`}>
+            <div role="status" className="px-3 py-1 text-xs bg-surface text-muted print:hidden">{filename} · {message}{warning && ` · ${warning}`}</div>
             {/* Toolbar hidden in Zen Mode and Print */}
             {!zenMode && (
                 <div className="print:hidden">
@@ -94,12 +95,11 @@ export default function Home() {
                         onOpen={handleOpen}
                         onDownload={handleDownload}
                         togglePreview={() => setShowPreview(!showPreview)}
-                        toggleTheme={() => setIsDarkMode(!isDarkMode)}
+                        theme={preferences.theme}
+                        onThemeChange={theme => updatePreferences({ theme })}
                         toggleZenMode={() => setZenMode(!zenMode)}
                         openCommandPalette={() => setCommandPaletteOpen(true)}
                         showPreview={showPreview}
-                        isDarkMode={isDarkMode}
-                        zenMode={zenMode}
                     />
                 </div>
             )}
@@ -123,7 +123,7 @@ export default function Home() {
                 onSave={handleSave}
                 onDownload={handleDownload}
                 togglePreview={() => setShowPreview(!showPreview)}
-                toggleTheme={() => setIsDarkMode(!isDarkMode)}
+                toggleTheme={() => updatePreferences({ theme: isDarkMode ? 'light' : 'dark' })}
                 toggleZenMode={() => setZenMode(!zenMode)}
                 onInsert={handleInsert}
                 isDarkMode={isDarkMode}

@@ -1,193 +1,86 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  /* Light Mode (Default) */
+:root, [data-theme="light"] {
+  color-scheme: light;
   --bg-primary: #ffffff;
-  --bg-secondary: #f3f4f6; /* gray-100 */
-  --bg-tertiary: #e5e7eb; /* gray-200 */
-  --text-primary: #111827; /* gray-900 */
-  --text-secondary: #4b5563; /* gray-600 */
-  --border-color: #e5e7eb; /* gray-200 */
-
-  /* Neutral Dark Mode (Overriding default with standard classes, but vars help transition) */
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-secondary: #f6f8fa;
+  --bg-tertiary: #e8edf3;
+  --text-primary: #1f2937;
+  --text-secondary: #536174;
+  --border-color: #d1d9e0;
+  --accent: #0969da;
 }
-
-/* Dark Mode Override */
-.dark {
-  --bg-primary: #0a0a0a; /* neutral-950 */
-  --bg-secondary: #171717; /* neutral-900 */
-  --bg-tertiary: #262626; /* neutral-800 */
-  --text-primary: #f5f5f5; /* neutral-100 */
-  --text-secondary: #a3a3a3; /* neutral-400 */
-  --border-color: #262626; /* neutral-800 */
-
-  --background: #0a0a0a;
-  --foreground: #ededed;
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-primary: #15171b;
+  --bg-secondary: #1d2027;
+  --bg-tertiary: #2b303a;
+  --text-primary: #edf1f7;
+  --text-secondary: #a7b3c5;
+  --border-color: #394354;
+  --accent: #8abaff;
 }
-
+[data-theme="sepia"] {
+  color-scheme: light;
+  --bg-primary: #fbf3e4;
+  --bg-secondary: #f1e7d2;
+  --bg-tertiary: #e5d7ba;
+  --text-primary: #433827;
+  --text-secondary: #6e5d43;
+  --border-color: #cfbea0;
+  --accent: #8a4c14;
+}
+[data-theme="midnight"] {
+  color-scheme: dark;
+  --bg-primary: #101827;
+  --bg-secondary: #172338;
+  --bg-tertiary: #23334c;
+  --text-primary: #e2edff;
+  --text-secondary: #a3b8d5;
+  --border-color: #354b69;
+  --accent: #7dd3fc;
+}
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  
-  /* Semantic Colors */
   --color-canvas: var(--bg-primary);
   --color-surface: var(--bg-secondary);
   --color-surface-hover: var(--bg-tertiary);
   --color-content: var(--text-primary);
   --color-muted: var(--text-secondary);
   --color-divider: var(--border-color);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
-
-body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; }
+button, select, summary { cursor: pointer; }
+button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px;
 }
-
-/* Custom Scrollbar for a premium feel */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.tool-button { padding: 9px; flex-shrink: 0; border-radius: 6px; color: var(--text-secondary); }
+.tool-button:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+main .cm-editor, main .cm-gutters { background: var(--bg-primary); color: var(--text-primary); }
+main .cm-gutters { border-color: var(--border-color); color: var(--text-secondary); }
+main .cm-activeLine, main .cm-activeLineGutter { background: var(--bg-secondary); }
+main .cm-cursor { border-left-color: var(--text-primary); }
+main .markdown-body {
+  color-scheme: inherit;
+  --fgColor-default: var(--text-primary);
+  --fgColor-muted: var(--text-secondary);
+  --fgColor-accent: var(--accent);
+  --bgColor-default: var(--bg-primary);
+  --bgColor-muted: var(--bg-secondary);
+  --bgColor-neutral-muted: var(--bg-tertiary);
+  --borderColor-default: var(--border-color);
+  --borderColor-muted: var(--border-color);
+  --borderColor-neutral-muted: var(--border-color);
+  color: var(--text-primary); background: var(--bg-primary);
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
-}
-
-/* Print Styles for Export PDF */
-/* Print Styles for Export PDF */
-@media print {
-     /* Force text color to black for readability on paper */
-    .prose {
-        color: black !important;
-    }
-    .prose * {
-        color: black !important;
-    }
-    .prose-invert {
-        --tw-prose-body: black !important;
-        --tw-prose-headings: black !important;
-        --tw-prose-bold: black !important;
-        --tw-prose-links: black !important;
-        --tw-prose-code: black !important;
-        --tw-prose-pre-code: black !important;
-        --tw-prose-pre-bg: transparent !important;
-    }
-}
-
-/* GitHub Markdown CSS Dark Mode Overrides */
-.dark .markdown-body {
-  color-scheme: dark;
-  --color-canvas-default: transparent;
-  --color-canvas-subtle: #161b22;
-  --color-border-default: #30363d;
-  --color-border-muted: #21262d;
-  --color-neutral-muted: rgba(110, 118, 129, 0.4);
-  --color-accent-fg: #58a6ff;
-  --color-accent-emphasis: #1f6feb;
-  --color-attention-subtle: rgba(187, 128, 9, 0.15);
-  --color-danger-fg: #f85149;
-  
-  /* Text Colors */
-  color: #c9d1d9;
-  
-  /* Reset background to transparent to blend with our app's pane */
-  background-color: transparent !important;
-}
-
-/* Headers in dark mode */
-.dark .markdown-body h1,
-.dark .markdown-body h2,
-.dark .markdown-body h3,
-.dark .markdown-body h4,
-.dark .markdown-body h5,
-.dark .markdown-body h6 {
-  color: #c9d1d9;
-  border-bottom-color: #21262d;
-}
-
-/* Links in dark mode */
-.dark .markdown-body a {
-  color: #58a6ff;
-}
-
-/* Code blocks in dark mode */
-.dark .markdown-body pre,
-.dark .markdown-body code {
-  background-color: #161b22; 
-}
-.dark .markdown-body .highlight pre, 
-.dark .markdown-body pre {
-    background-color: #161b22;
-}
-
-/* Tables in dark mode */
-.dark .markdown-body table tr {
-    background-color: transparent;
-    border-top-color: #21262d;
-}
-.dark .markdown-body table tr:nth-child(2n) {
-    background-color: #161b22;
-}
-.dark .markdown-body table td, 
-.dark .markdown-body table th {
-    border-color: #30363d;
-}
-
-/* Light Mode Overrides for Markdown (Fixes invisible text if OS is Dark but App is Light) */
-main:not(.dark) .markdown-body {
-    --color-canvas-default: transparent;
-    --color-canvas-subtle: #f6f8fa;
-    --color-border-default: #d0d7de;
-    --color-border-muted: hsla(210, 18%, 87%, 1);
-    --color-neutral-muted: rgba(175, 184, 193, 0.2);
-    --color-accent-fg: #0969da;
-    --color-accent-emphasis: #0969da;
-    --color-attention-subtle: #fff8c5;
-    --color-danger-fg: #cf222e;
-    
-    color-scheme: light;
-    color: #24292e;
-}
-main:not(.dark) .markdown-body h1,
-main:not(.dark) .markdown-body h2,
-main:not(.dark) .markdown-body h3,
-main:not(.dark) .markdown-body h4,
-main:not(.dark) .markdown-body h5,
-main:not(.dark) .markdown-body h6 {
-    color: #24292e;
-    border-bottom-color: #d0d7de;
-}
-main:not(.dark) .markdown-body a {
-    color: #0969da;
-}
-main:not(.dark) .markdown-body pre,
-main:not(.dark) .markdown-body code {
-    background-color: #f6f8fa;
-}
-main:not(.dark) .markdown-body table tr {
-    background-color: transparent;
-    border-top-color: #d8dee4;
-}
-main:not(.dark) .markdown-body table tr:nth-child(2n) {
-    background-color: #f6f8fa;
-}
-main:not(.dark) .markdown-body table td, 
-main:not(.dark) .markdown-body table th {
-    border-color: #d0d7de;
-}
+.markdown-body .diagram-block { white-space: normal; }
+.markdown-body .diagram-block svg { max-width: 100%; height: auto; }
+.markdown-body img { max-width: 100%; }
 
 /* ========================================= */
 /* Highlight.js Themes (Manually Managed)    */

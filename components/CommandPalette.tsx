@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Command } from 'cmdk';
 import {
-    FileText, Save, FolderOpen, Download,
-    Maximize, Minimize, Eye, Sun
+    Save, FolderOpen, Download,
+    Maximize, Eye, Sun
 } from 'lucide-react';
 
 import { EDITOR_TOOLS } from '@/lib/constants';

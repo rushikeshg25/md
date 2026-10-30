@@ -64,7 +64,7 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(({ value, onCreate
         <div
             ref={ref}
             className={`h-full w-full overflow-auto ${className}`}
-            style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff' }}
+            style={{ backgroundColor: 'var(--bg-primary)' }}
         >
             <CodeMirror
                 onCreateEditor={view => {

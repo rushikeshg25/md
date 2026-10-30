@@ -14,18 +14,18 @@ export const StatusBar: React.FC<StatusBarProps> = ({
     wordCount, charCount, cursorLine, cursorCol, className
 }) => {
     return (
-        <div className={`h-6 w-full bg-neutral-900 border-t border-neutral-800 text-xs text-neutral-500 flex items-center justify-end px-4 gap-4 select-none ${className}`}>
+        <div className={`h-6 w-full bg-surface border-t border-divider text-xs text-muted flex items-center justify-end px-4 gap-4 select-none ${className}`}>
             <div className="flex items-center gap-1">
-                <span className="font-medium text-neutral-400">{cursorLine}:{cursorCol}</span>
+                <span className="font-medium text-content">{cursorLine}:{cursorCol}</span>
             </div>
-            <div className="w-px h-3 bg-neutral-800" />
+            <div className="w-px h-3 bg-divider" />
             <div className="flex items-center gap-1">
-                <span className="font-medium text-neutral-400">{wordCount}</span>
+                <span className="font-medium text-content">{wordCount}</span>
                 <span>words</span>
             </div>
-            <div className="w-px h-3 bg-neutral-800" />
+            <div className="w-px h-3 bg-divider" />
             <div className="flex items-center gap-1">
-                <span className="font-medium text-neutral-400">{charCount}</span>
+                <span className="font-medium text-content">{charCount}</span>
                 <span>chars</span>
             </div>
         </div>
