@@ -108,9 +108,10 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 .toolbar-editor-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 8px; border-top: 1px solid var(--border-color); }
 .toolbar-formatting { min-width: 0; max-width: 100%; overflow-x: auto; padding: 4px; }
 .toolbar-selectors { display: flex; gap: 10px; }
-.toolbar-control { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.toolbar-control { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px; min-width: 0; }
 .toolbar-control > span { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); }
-.toolbar-control select { max-width: 170px; min-width: 110px; min-height: 34px; padding: 5px 8px; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-primary); color: var(--text-primary); font-size: 12px; }
+.toolbar-control select { grid-area: 2 / 1; appearance: none; max-width: 170px; min-width: 110px; min-height: 34px; padding: 5px 32px 5px 8px; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-primary); color: var(--text-primary); font-size: 12px; }
+.toolbar-control::after { content: ''; grid-area: 2 / 1; justify-self: end; align-self: center; width: 6px; height: 6px; margin: -3px 12px 0 0; border-right: 1.5px solid var(--text-secondary); border-bottom: 1.5px solid var(--text-secondary); transform: rotate(45deg); pointer-events: none; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 main .cm-editor, main .cm-gutters { background: var(--bg-primary); color: var(--text-primary); }
