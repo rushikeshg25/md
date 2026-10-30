@@ -23,16 +23,14 @@ interface PreviewProps {
 export const Preview = memo(forwardRef<HTMLDivElement, PreviewProps>(({ content, className, onScroll, isDarkMode }, ref) => {
 
     const components = useMemo<Components>(() => ({
-        code(props) {
-            const { children, className } = props
-            const match = /language-(\w+)/.exec(className || '')
-            const lang = match ? match[1] : ''
-
-            if (lang === 'mermaid') {
-                return <MermaidBlock chart={String(children).replace(/\n$/, '')} isDarkMode={isDarkMode} />
+        pre({ node, children }) {
+            const code = node?.children[0];
+            if (code?.type === 'element' && code.tagName === 'code' &&
+                Array.isArray(code.properties.className) && code.properties.className.includes('language-mermaid')) {
+                const chart = code.children.map(child => child.type === 'text' ? child.value : '').join('').replace(/\n$/, '');
+                return <MermaidBlock chart={chart} isDarkMode={isDarkMode} />;
             }
-
-            return <code className={className}>{children}</code>
+            return <pre>{children}</pre>;
         }
     }), [isDarkMode]);
 

@@ -1,59 +1,55 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import mermaid from 'mermaid';
+import { useEffect, useId, useState } from 'react';
 
-interface MermaidBlockProps {
-    chart: string;
-    isDarkMode: boolean;
-}
+// Mermaid has global configuration. Serialize initialization and rendering together.
+let renderQueue: Promise<unknown> = Promise.resolve();
+interface RenderResult { chart: string; dark: boolean; svg?: string; error?: string }
 
-mermaid.initialize({
-    startOnLoad: false,
-    theme: 'neutral',
-    securityLevel: 'loose',
-});
-
-export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart, isDarkMode }) => {
-    const ref = useRef<HTMLDivElement>(null);
-    const [svg, setSvg] = useState<string>('');
-    const [error, setError] = useState<string | null>(null);
+export function MermaidBlock({ chart, isDarkMode }: { chart: string; isDarkMode: boolean }) {
+    const id = `mermaid-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
+    const [result, setResult] = useState<RenderResult | null>(null);
+    const current = result?.chart === chart && result.dark === isDarkMode ? result : null;
 
     useEffect(() => {
-        mermaid.initialize({
-            startOnLoad: false,
-            theme: isDarkMode ? 'dark' : 'neutral',
-        });
-    }, [isDarkMode]);
-
-    useEffect(() => {
-        const renderChart = async () => {
-            if (!ref.current) return;
-
-            try {
-                const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
-                const { svg } = await mermaid.render(id, chart);
-                setSvg(svg);
-                setError(null);
-            } catch (err: any) {
-                console.error("Mermaid Render Error:", err);
-                // Mermaid often throws error text into the DOM, but we can capture it here
-                setError('Invalid Mermaid Syntax');
-            }
-        };
-
-        renderChart();
-    }, [chart, isDarkMode]);
-
-    if (error) {
-        return <div className="text-red-500 text-sm p-2 border border-red-500/20 bg-red-500/10 rounded">{error}</div>;
-    }
+        let cancelled = false;
+        const timer = window.setTimeout(() => {
+            renderQueue = renderQueue.catch(() => undefined).then(async () => {
+                if (cancelled) return;
+                const container = document.createElement('div');
+                container.style.cssText = 'position:fixed;left:-10000px;top:0;visibility:hidden;';
+                document.body.append(container);
+                try {
+                    const { default: mermaid } = await import('mermaid');
+                    if (cancelled) return;
+                    mermaid.initialize({
+                        startOnLoad: false,
+                        securityLevel: 'strict',
+                        theme: isDarkMode ? 'dark' : 'neutral',
+                        suppressErrorRendering: true,
+                        maxTextSize: 50000,
+                    });
+                    const { svg } = await mermaid.render(id, chart, container);
+                    if (!cancelled) setResult({ chart, dark: isDarkMode, svg });
+                } catch {
+                    if (!cancelled) setResult({ chart, dark: isDarkMode, error: 'Could not render this Mermaid diagram. Check the syntax below.' });
+                } finally {
+                    container.remove();
+                }
+            });
+        }, 200);
+        return () => { cancelled = true; clearTimeout(timer); };
+    }, [chart, isDarkMode, id]);
 
     return (
-        <div
-            ref={ref}
-            className="flex justify-center my-4 overflow-x-auto p-4 bg-neutral-50/5 dark:bg-neutral-900/50 rounded"
-            dangerouslySetInnerHTML={{ __html: svg }}
-        />
+        <div className="diagram-block my-4 rounded border border-divider p-4" aria-label="Mermaid diagram" aria-busy={!current}>
+            {!current && <p role="status">Rendering diagram…</p>}
+            {current?.error && <p role="alert" className="text-red-500">{current.error}</p>}
+            {current?.svg && <div className="overflow-x-auto flex justify-center" dangerouslySetInnerHTML={{ __html: current.svg }} />}
+            <details className="mt-2 text-sm" open={!!current?.error}>
+                <summary>Diagram source</summary>
+                <pre><code>{chart}</code></pre>
+            </details>
+        </div>
     );
-};
+}
