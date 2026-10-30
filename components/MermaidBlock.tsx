@@ -27,6 +27,9 @@ export function MermaidBlock({ chart, isDarkMode }: { chart: string; isDarkMode:
                         startOnLoad: false,
                         securityLevel: 'strict',
                         theme: isDarkMode ? 'dark' : 'neutral',
+                        // Preserve existing diagrams across Mermaid 12's new defaults.
+                        layout: 'dagre',
+                        look: 'classic',
                         suppressErrorRendering: true,
                         maxTextSize: 50000,
                     });
