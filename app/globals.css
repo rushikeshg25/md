@@ -95,10 +95,10 @@ code.hljs {
   padding: 3px 5px;
 }
 
+/* The enclosing pre owns the background; inline code and diff tokens keep theirs. */
 /* Light Mode (Default - GitHub Light) */
 .hljs {
   color: #24292e;
-  background: #ffffff;
 }
 .hljs-doctag,
 .hljs-keyword,
@@ -177,7 +177,6 @@ code.hljs {
 /* Dark Mode (GitHub Dark) */
 .dark .hljs {
   color: #c9d1d9;
-  background: #0d1117;
 }
 .dark .hljs-doctag,
 .dark .hljs-keyword,
@@ -277,7 +276,7 @@ code.hljs {
   .diagram-block, .markdown-body img { break-inside: avoid; }
   .diagram-block svg text, .diagram-block .label, .diagram-block foreignObject * { fill: #111 !important; color: #111 !important; }
   .diagram-block .node rect, .diagram-block .node polygon { fill: #fff !important; stroke: #444 !important; }
-  .markdown-body .hljs { color: #111 !important; background: #f6f8fa !important; }
+  .markdown-body .hljs { color: #111 !important; }
   .markdown-body .hljs span { color: #111 !important; }
 }
 

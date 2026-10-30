@@ -62,6 +62,34 @@ test('themes persist, system follows OS, and narrow views stay full width', asyn
     await page.screenshot({ path: testInfo.outputPath('layout.png'), fullPage: true });
 });
 
+test('code blocks share one background across themes and print', async ({ page }, testInfo) => {
+    await write(page, [
+        'Inline `code` keeps its background.',
+        '```\nEC2 instance: the virtual computer\nLinux: its operating system\n```',
+        '```text\nEnvoy: a program running on that computer\nSecond line\n```',
+        '```js\nconst proxy = "Envoy";\nconsole.log(proxy);\n```',
+        '```diff\n- removed\n+ added\n```',
+    ].join('\n\n'));
+    await preview(page);
+    const blocks = page.locator('[data-document] pre > code');
+    await expect(blocks).toHaveCount(4);
+    const transparent = 'rgba(0, 0, 0, 0)';
+    for (const theme of ['light', 'dark', 'sepia', 'midnight']) {
+        await page.getByRole('combobox', { name: 'Theme', exact: true }).selectOption(theme);
+        for (const block of await blocks.all()) {
+            await expect(block).toHaveCSS('background-color', transparent);
+        }
+        await expect(page.locator('[data-document] p > code')).not.toHaveCSS('background-color', transparent);
+        await expect(page.locator('[data-document] .hljs-addition')).not.toHaveCSS('background-color', transparent);
+        await expect(page.locator('[data-document] .hljs-deletion')).not.toHaveCSS('background-color', transparent);
+    }
+    await page.screenshot({ path: testInfo.outputPath('code-backgrounds.png'), fullPage: true });
+    await page.emulateMedia({ media: 'print' });
+    for (const block of await blocks.all()) {
+        await expect(block).toHaveCSS('background-color', transparent);
+    }
+});
+
 test('extension settings change rendering and persist', async ({ page }) => {
     await write(page, '# Example\n\n~~old~~\n\n$x^2$\n\n> [!NOTE]\n> Read this.');
     await preview(page);
