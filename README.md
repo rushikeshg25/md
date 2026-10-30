@@ -146,7 +146,7 @@ bunx playwright install chromium firefox webkit
 bun run test:e2e
 ```
 
-On Linux, use `bunx playwright install --with-deps chromium firefox webkit` to install the required system libraries. Run `bun audit` separately to check dependency advisories.
+On Linux, use `bunx playwright install --with-deps chromium firefox webkit` to install the required system libraries. Run `bun audit` to check dependency advisories; CI also runs it on every push and pull request.
 
 The Playwright suite starts a production server on **port 3100**, which must be free. It covers desktop Chromium/Firefox and mobile Chromium/WebKit profiles. Mobile profiles emulate device layouts; they are not physical-device tests. Failures retain traces in `test-results/`.
 
@@ -155,6 +155,10 @@ Coverage includes document recovery, native input and undo, themes, Markdown ext
 ## Rendering boundaries
 
 Raw HTML is displayed as text, unsafe link protocols are filtered, Mermaid uses strict security settings, and KaTeX runs with trust disabled. Extensions are curated; arbitrary JavaScript plugins are not loaded. Chart.js, Vega, and PlantUML fences remain source code.
+
+Mermaid 12 requires modern browsers, including **Safari 17.4 or newer**. Diagrams keep the previous Dagre layout and classic appearance by default.
+
+Response headers prevent framing of the editor, disable MIME sniffing, and omit referrers from outgoing requests. The app's Content Security Policy restricts framing, embedded objects, base URLs, and form targets; it is not a strict script policy. HTML exports have a separate policy that blocks scripts. Browser tests cover malicious HTML, unsafe links, untrusted math, Mermaid security-setting overrides, and standalone HTML exports. See the [security maintenance report](docs/security-maintenance.md) for audit results and upgrade constraints.
 
 KaTeX is overridden to the patched 0.19 series in [package.json](package.json) because upstream Markdown/Mermaid dependencies still request an older range. Rendering and untrusted-command regression tests cover the integration; review the override when those dependencies change.
 
