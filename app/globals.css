@@ -253,3 +253,9 @@ code.hljs {
   color: #ffdcd7;
   background-color: #67060c;
 }
+
+.markdown-body .markdown-alert { border-left: 4px solid var(--accent); padding: 0.5rem 1rem; background: var(--bg-secondary); color: var(--text-primary); }
+.markdown-body .markdown-alert-tip { border-left-color: #22863a; }
+.markdown-body .markdown-alert-important { border-left-color: #8957e5; }
+.markdown-body .markdown-alert-warning { border-left-color: #9a6700; }
+.markdown-body .markdown-alert-caution { border-left-color: #cf222e; }

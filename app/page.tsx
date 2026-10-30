@@ -6,6 +6,7 @@ import type { EditorView } from '@codemirror/view';
 import { formatSelection } from '@/lib/editing';
 import type { EditorStats } from '@/components/Editor';
 import { Editor } from '@/components/Editor';
+import { MarkdownSettings } from '@/components/MarkdownSettings';
 import { Preview } from '@/components/Preview';
 import { Toolbar } from '@/components/Toolbar';
 import { StatusBar } from '@/components/StatusBar';
@@ -104,6 +105,8 @@ export default function Home() {
                 </div>
             )}
 
+            {!zenMode && <MarkdownSettings extensions={preferences.extensions} onChange={extensions => updatePreferences({ extensions })} />}
+
             {/* Exit Zen Mode Floating Button (Visible only in Zen Mode) - Hidden in Print */}
             {zenMode && (
                 <button
@@ -160,6 +163,7 @@ export default function Home() {
                         >
                             <Preview
                                 ref={previewRef}
+                                extensions={preferences.extensions}
                                 content={previewContent}
                                 onScroll={scrollPreview}
                                 isDarkMode={isDarkMode}
