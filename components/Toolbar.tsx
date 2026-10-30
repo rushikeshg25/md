@@ -1,7 +1,7 @@
 "use client";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { Save, FolderOpen, Download, Eye, Columns, Maximize, FileText, Command as CommandIcon } from 'lucide-react';
+import { Save, FolderOpen, Download, Search, Maximize, FileText, Command as CommandIcon } from 'lucide-react';
 import { EDITOR_TOOLS } from '@/lib/constants';
 import { TEMPLATES } from '@/lib/templates';
 import { THEMES, type Theme } from '@/lib/preferences';
@@ -13,15 +13,17 @@ interface ToolbarProps {
     onDownload: () => void;
     onExportHtml: () => void;
     onPrint: () => void;
-    togglePreview: () => void;
+    layout: 'editor' | 'split' | 'preview';
+    onLayoutChange: (layout: 'editor' | 'split' | 'preview') => void;
+    isNarrow: boolean;
+    onSearch: () => void;
     toggleZenMode: () => void;
     openCommandPalette: () => void;
-    showPreview: boolean;
     theme: Theme;
     onThemeChange: (theme: Theme) => void;
 }
 
-export function Toolbar({ onInsert, onSave, onOpen, onDownload, onExportHtml, onPrint, togglePreview, toggleZenMode, openCommandPalette, showPreview, theme, onThemeChange }: ToolbarProps) {
+export function Toolbar({ onInsert, onSave, onOpen, onDownload, onExportHtml, onPrint, layout, onLayoutChange, isNarrow, onSearch, toggleZenMode, openCommandPalette, theme, onThemeChange }: ToolbarProps) {
     const actions = [
         { label: 'Open file', icon: FolderOpen, action: onOpen },
         { label: 'Command palette', icon: CommandIcon, action: openCommandPalette },
@@ -29,7 +31,7 @@ export function Toolbar({ onInsert, onSave, onOpen, onDownload, onExportHtml, on
         { label: 'Download Markdown', icon: Download, action: onDownload },
         { label: 'Export HTML', icon: FileText, action: onExportHtml },
         { label: 'Print or save PDF', icon: FileText, action: onPrint },
-        { label: showPreview ? 'Hide preview' : 'Show preview', icon: showPreview ? Columns : Eye, action: togglePreview },
+        { label: 'Find and replace', icon: Search, action: onSearch },
         { label: 'Zen mode', icon: Maximize, action: toggleZenMode },
     ];
     return (
@@ -58,13 +60,19 @@ export function Toolbar({ onInsert, onSave, onOpen, onDownload, onExportHtml, on
                             {TEMPLATES.filter(item => item.category === category).map(item => <option key={item.label}>{item.label}</option>)}
                         </optgroup>)}
                     </select>
+                    <select aria-label="View" value={layout} onChange={event => onLayoutChange(event.target.value as ToolbarProps['layout'])}
+                        className="rounded border border-divider bg-canvas p-2 text-sm text-content">
+                        <option value="editor">Editor</option>
+                        {!isNarrow && <option value="split">Split</option>}
+                        <option value="preview">Preview</option>
+                    </select>
                     <select aria-label="Theme" value={theme} onChange={event => onThemeChange(event.target.value as Theme)}
                         className="rounded border border-divider bg-canvas p-2 text-sm text-content capitalize">
                         {THEMES.map(name => <option key={name} value={name}>{name.charAt(0).toUpperCase() + name.slice(1)}</option>)}
                     </select>
                     {actions.map(({ label, icon: Icon, action }) => (
                         <Tooltip key={label}>
-                            <TooltipTrigger asChild><button aria-label={label} onClick={action} className="tool-button"><Icon size={18} /></button></TooltipTrigger>
+                            <TooltipTrigger asChild><button aria-label={label} onClick={event => { event.currentTarget.focus(); action(); }} className="tool-button"><Icon size={18} /></button></TooltipTrigger>
                             <TooltipContent>{label}</TooltipContent>
                         </Tooltip>
                     ))}

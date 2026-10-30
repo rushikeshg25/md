@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root, [data-theme="light"] {
@@ -49,8 +48,8 @@
   --color-content: var(--text-primary);
   --color-muted: var(--text-secondary);
   --color-divider: var(--border-color);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 body { margin: 0; font-family: Arial, Helvetica, sans-serif; }
 button, select, summary { cursor: pointer; }
@@ -281,3 +280,16 @@ code.hljs {
   .markdown-body .hljs { color: #111 !important; background: #f6f8fa !important; }
   .markdown-body .hljs span { color: #111 !important; }
 }
+
+.command-dialog { width: min(600px, 90vw); max-height: 80dvh; margin: 12vh auto auto; padding: 0; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-secondary); color: var(--text-primary); box-shadow: 0 20px 80px #0006; }
+.command-dialog::backdrop { background: #0008; backdrop-filter: blur(3px); }
+.document-status { overflow-wrap: anywhere; }
+@media (max-width: 767px) {
+  .toolbar { gap: 6px; }
+  .toolbar > [aria-label="Formatting"] { width: 100%; }
+  .toolbar > [aria-label="Document actions"] { width: 100%; }
+  .toolbar select { padding: 6px; }
+  .tool-button { padding: 10px; }
+  .preview-pane > div { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0s !important; transition-duration: 0s !important; } }

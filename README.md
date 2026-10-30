@@ -1,80 +1,74 @@
-# Next Markdown Editor
+# Markdown Editor
 
-A powerful, feature-rich Markdown editor built with Next.js 16, React 19, and Tailwind CSS. Designed for a seamless writing experience with real-time preview, advanced syntax highlighting, and distraction-free modes.
-
-![Project Status](https://img.shields.io/badge/status-active-success.svg)
-![Next.js](https://img.shields.io/badge/Next.js-16.1-black)
-![React](https://img.shields.io/badge/React-19-blue)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC)
+A local-first Markdown editor built with Next.js, React and CodeMirror. Write in the editor, view the rendered document, and export your work without an account.
 
 ## Features
 
-- **Real-time Split Preview**: Synchronized scrolling between the editor and preview pane.
-- **Advanced Editor**: Powered by CodeMirror with syntax highlighting for Markdown.
-- **Rich Content Support**:
-  - **GFM**: GitHub Flavored Markdown (tables, task lists, etc.).
-  - **Math**: LaTeX equation support via KaTeX ($ E = mc^2 $).
-  - **Diagrams**: Mermaid.js integration for flowcharts and graphs.
-- **Distraction-Free Zen Mode**: Toggle UI elements to focus purely on your content.
-- **Command Palette**: Rapidly access commands with `Cmd+K` (or `Ctrl+K`).
-- **File Operations**:
-  - Open local Markdown files.
-  - Save changes to disk.
-  - Download/Export options.
-- **Customizable UI**:
-  - Resizable editor/preview panes.
-  - Dark/Light mode theming.
-  - Responsive design.
-- **Statistics**: Real-time word, character, line, and column counts.
+- Editor, split and preview views. Phones use a full-width editor/preview switch.
+- Cursor-aware formatting, undo/redo, find/replace, synchronized scrolling and a keyboard-accessible divider.
+- System, Light, Dark, Sepia and Midnight themes with saved preferences.
+- Configurable Markdown extensions: GitHub tables/tasks/footnotes, KaTeX math, Mermaid diagrams/charts, syntax highlighting, single-line breaks and GitHub alerts.
+- Templates for flowcharts, sequence diagrams, mind maps, pie charts, bar/line charts, Gantt charts, math and callouts.
+- Document outline, heading anchors, code-copy buttons and SVG diagram downloads.
+- Local draft recovery, including empty documents, with visible storage errors.
+- Local Markdown file import/save, with file-input and download fallbacks for browsers without native file pickers.
+- Markdown download, portable HTML export with SVG and MathML, and print/PDF through the browser.
+- A searchable command palette and Zen mode with a visible exit.
 
-## Tech Stack
+See the [Markdown guide](docs/markdown-guide.md) for syntax and the [research notes](docs/editor-research.md) for the feature comparison and sources.
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Editor Core**: [CodeMirror](https://codemirror.net/) via [`@uiw/react-codemirror`](https://uiwjs.github.io/react-codemirror/)
-- **Markdown Engine**:
-  - [`react-markdown`](https://github.com/remarkjs/react-markdown)
-  - [`remark-gfm`](https://github.com/remarkjs/remark-gfm)
-  - [`rehype-katex`](https://github.com/remarkjs/react-markdown#use-custom-components-syntax-highlight) & [`katex`](https://katex.org/)
-- **Diagrams**: [`mermaid`](https://mermaid.js.org/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Utilities**: `cmdk` (Command Palette), `clsx`, `tailwind-merge`
+## Run locally
 
-## Getting Started
+Use Node.js **22.18 or newer** (Node 24 recommended) and **Bun 1.4.4**. `bun.lock` is the canonical lockfile.
 
-### Prerequisites
+```sh
+bun install --frozen-lockfile
+bun run dev
+```
 
-Ensure you have Node.js installed on your machine.
+Open http://localhost:3000. For a production server:
 
-### Installation
+```sh
+bun run build
+bun run start
+```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/rushikeshg25/md.git
-    cd md
-    ```
+## Verification
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    # or
-    yarn install
-    # or
-    pnpm install
-    # or
-    bun install
-    ```
+```sh
+bun run lint
+bun run typecheck
+bun run test
+bun run build
+bunx playwright install chromium firefox webkit
+bun run test:e2e
+bun audit
+```
 
-3.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
+The browser suite starts the production build on port **3100**, which must be free. It exercises desktop Chromium/Firefox and mobile Chromium/WebKit. Build before running it. On Linux, use `bunx playwright install --with-deps chromium firefox webkit` to install browser system prerequisites. Failed runs retain traces in `test-results/`. CI runs the same lint, type, unit, build and browser checks.
+
+Tests use Node's native TypeScript support for small modules. Browser tests cover persistence, formatting/undo, themes, extensions, diagram recovery, portable files, modal focus, outline/copy behavior, export and mobile layout.
+
 ## Shortcuts
 
-| Key | Action |
-| :--- | :--- |
-| `Cmd + K` / `Ctrl + K` | Open Command Palette |
-| `Cmd + S` / `Ctrl + S` | Save File |
-| `Esc` (in Zen Mode) | Exit Zen Mode |
+| Shortcut | Action |
+| --- | --- |
+| Cmd/Ctrl + K | Command palette |
+| Cmd/Ctrl + S | Save file or start a download |
+| Cmd/Ctrl + F | Find/replace in the editor |
+| Cmd/Ctrl + Z | Undo |
+| Escape | Close the palette or leave Zen mode |
+| Left/Right on the divider | Resize by 5 percentage points |
+| Home/End on the divider | Set editor width to 20%/80% |
 
+## Storage, rendering and export
 
+The app keeps one draft and preferences in this browser's local storage. Autosave waits 250 ms after editing and flushes when the page becomes hidden. It is not a disk save or a backup. Browser storage can be cleared or denied; use Save or Download for durable copies. Multiple tabs share the draft slot. Opening a file asks before replacing a nonempty document.
+
+Raw HTML is escaped, unsafe link protocols are filtered, Mermaid uses strict mode, and KaTeX trust is disabled. The extension list is curated; arbitrary JavaScript plugin loading is not supported. See the guide for supported chart formats. Large diagrams may take time to render; export asks you to retry while rendering is pending.
+
+HTML export includes rendered diagrams and native MathML equations without runtime scripts or external fonts. Remote images and external links still need network access. Browser print/PDF uses a light document style even when the editor is dark. Save to PDF from the browser's print dialog.
+
+KaTeX is overridden to the patched 0.19 series throughout the dependency tree because the Markdown/Mermaid packages still request an older range. Rendering and untrusted-command regression tests cover this integration. Recheck the override when those upstream ranges advance.
+
+Cloud sync, collaboration, arbitrary chart libraries and full offline app installation are not included.

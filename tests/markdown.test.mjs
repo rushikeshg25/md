@@ -36,4 +36,10 @@ test('headings have stable unique anchors, including duplicate and Unicode title
   assert.match(html, /id="md-hello-world-1"/);
   assert.match(html, /id="md-hello-world-1-1"/);
   assert.doesNotMatch(html, /id="md-not-a-heading"/);
+  assert.match(html, /id="md-नमस्ते"/);
+});
+test('math keeps untrusted commands disabled after the KaTeX update', () => {
+  const html = render('$\\href{javascript:alert(1)}{unsafe}$');
+  assert.doesNotMatch(html, /href="javascript:/);
+  assert.match(render('$$\n\\begin{aligned}a &= b + c \\\\ d &= e\\end{aligned}\n$$'), /<math/);
 });

@@ -25,10 +25,11 @@ export const Preview = memo(forwardRef<HTMLDivElement, PreviewProps>(({ content,
     const containerRef = useRef<HTMLDivElement>(null);
     useImperativeHandle(ref, () => containerRef.current!, []);
     const components = useMemo<Components>(() => ({
-        a({ href, children }) {
+        a({ href, children, ...attributes }) {
+            delete attributes.node;
             const external = /^(https?:)?\/\//.test(href ?? '');
             const target = href?.startsWith('#') && !href.startsWith('#user-content-') && !href.startsWith('#md-') ? `#md-${href.slice(1)}` : href;
-            return <a href={target} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>{children}</a>;
+            return <a {...attributes} href={target} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>{children}</a>;
         },
         pre({ node, children }) {
             const code = node?.children[0];

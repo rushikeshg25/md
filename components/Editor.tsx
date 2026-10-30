@@ -6,6 +6,33 @@ import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { EditorView } from '@codemirror/view';
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 
+const BASIC_SETUP = {
+    lineNumbers: true,
+    highlightActiveLineGutter: true,
+    highlightSpecialChars: true,
+    history: true,
+    foldGutter: true,
+    drawSelection: true,
+    dropCursor: true,
+    allowMultipleSelections: true,
+    indentOnInput: true,
+    syntaxHighlighting: true,
+    bracketMatching: true,
+    closeBrackets: true,
+    autocompletion: true,
+    rectangularSelection: true,
+    crosshairCursor: true,
+    highlightActiveLine: true,
+    highlightSelectionMatches: true,
+    closeBracketsKeymap: true,
+    defaultKeymap: true,
+    searchKeymap: true,
+    historyKeymap: true,
+    foldKeymap: true,
+    completionKeymap: true,
+    lintKeymap: true,
+};
+
 export interface EditorStats {
     line: number;
     col: number;
@@ -57,6 +84,7 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(({ value, onCreate
     const extensions = useMemo(() => [
         markdown({ base: markdownLanguage }),
         EditorView.lineWrapping,
+        EditorView.contentAttributes.of({ "aria-label": "Markdown source" }),
         EditorView.domEventHandlers({ scroll: (_event, view) => { onScroll?.(view.scrollDOM); } }),
     ], [onScroll]);
 
@@ -74,7 +102,6 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(({ value, onCreate
                     onStatistics?.(stats);
                     onCreateEditor?.(view);
                 }}
-                aria-label="Markdown source"
                 value={value}
                 height="100%"
                 extensions={extensions}
@@ -82,32 +109,7 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(({ value, onCreate
                 onUpdate={handleStatistics} // Hook into updates
                 theme={isDarkMode ? vscodeDark : vscodeLight}
                 className="h-full text-base"
-                basicSetup={{
-                    lineNumbers: true,
-                    highlightActiveLineGutter: true,
-                    highlightSpecialChars: true,
-                    history: true,
-                    foldGutter: true,
-                    drawSelection: true,
-                    dropCursor: true,
-                    allowMultipleSelections: true,
-                    indentOnInput: true,
-                    syntaxHighlighting: true,
-                    bracketMatching: true,
-                    closeBrackets: true,
-                    autocompletion: true,
-                    rectangularSelection: true,
-                    crosshairCursor: true,
-                    highlightActiveLine: true,
-                    highlightSelectionMatches: true,
-                    closeBracketsKeymap: true,
-                    defaultKeymap: true,
-                    searchKeymap: true,
-                    historyKeymap: true,
-                    foldKeymap: true,
-                    completionKeymap: true,
-                    lintKeymap: true,
-                }}
+                basicSetup={BASIC_SETUP}
             />
         </div>
     );

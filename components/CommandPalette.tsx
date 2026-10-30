@@ -1,14 +1,10 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Command } from 'cmdk';
-import {
-    Save, FolderOpen, Download,
-    Maximize, Eye, Sun
-} from 'lucide-react';
-
 import { TEMPLATES } from '@/lib/templates';
 import { EDITOR_TOOLS } from '@/lib/constants';
+import type { Theme } from '@/lib/preferences';
 
 interface CommandPaletteProps {
     open: boolean;
@@ -18,102 +14,74 @@ interface CommandPaletteProps {
     onDownload: () => void;
     onExportHtml: () => void;
     onPrint: () => void;
+    onSearch: () => void;
     togglePreview: () => void;
     toggleTheme: () => void;
     toggleZenMode: () => void;
     onInsert: (template: string) => void;
-    isDarkMode: boolean;
+    theme: Theme;
 }
-
-export const CommandPalette: React.FC<CommandPaletteProps> = ({
-    open, onOpenChange, onOpen, onSave, onDownload, onExportHtml, onPrint, togglePreview, toggleTheme, toggleZenMode, onInsert, isDarkMode
-}) => {
-    // Toggle with Cmd+K and handle Esc
+export function CommandPalette({ open, onOpenChange, onOpen, onSave, onDownload, onExportHtml, onPrint, onSearch, togglePreview, toggleTheme, toggleZenMode, onInsert, theme }: CommandPaletteProps) {
+    const dialog = useRef<HTMLDialogElement>(null);
+    const input = useRef<HTMLInputElement>(null);
     useEffect(() => {
-        const down = (e: KeyboardEvent) => {
-            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault();
+        if (open) { dialog.current?.showModal(); input.current?.focus(); }
+        else dialog.current?.close();
+    }, [open]);
+    useEffect(() => {
+        const down = (event: KeyboardEvent) => {
+            if (event.key.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey)) {
+                event.preventDefault();
                 onOpenChange(!open);
             }
-            if (e.key === 'Escape' && open) {
-                e.preventDefault();
-                onOpenChange(false);
-            }
-        }
+        };
         document.addEventListener('keydown', down);
         return () => document.removeEventListener('keydown', down);
     }, [open, onOpenChange]);
-
     const run = (action: () => void) => {
-        action();
+        // Close first so native focus restoration cannot steal the editor selection.
+        dialog.current?.close();
         onOpenChange(false);
-    }
-
-    const itemClass = `flex items-center gap-2 px-2 py-2 text-sm rounded cursor-pointer transition-colors ${isDarkMode
-        ? 'text-neutral-300 data-[selected=true]:bg-neutral-800 data-[selected=true]:text-white'
-        : 'text-gray-700 data-[selected=true]:bg-gray-200 data-[selected=true]:text-gray-900'
-        }`;
-
-    if (!open) return null;
-
-    return (
-        <div
-            className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] bg-black/50 backdrop-blur-sm transition-opacity"
-            onClick={() => onOpenChange(false)}
-        >
-            <Command
-                className={`w-[600px] max-w-[90vw] rounded-xl border shadow-2xl overflow-hidden ${isDarkMode ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-white border-gray-200 text-gray-800'}`}
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="flex items-center border-b border-neutral-800 px-3" cmdk-input-wrapper="">
-                    <Command.Input
-                        autoFocus
-                        placeholder="Type a command or search..."
-                        className={`flex h-12 w-full bg-transparent px-2 text-sm outline-none placeholder:text-neutral-500`}
-                    />
-                </div>
-                <Command.List className="max-h-[300px] overflow-y-auto overflow-x-hidden p-2">
-                    <Command.Empty className="py-6 text-center text-sm text-neutral-500">No results found.</Command.Empty>
-
-                    <Command.Group heading="File Actions" className="mb-2 text-xs font-medium text-neutral-500 px-2 slide-in-from-top-1">
-                        <Command.Item onSelect={() => run(onOpen)} className={itemClass}>
-                            <FolderOpen size={14} /> Open File
-                        </Command.Item>
-                        <Command.Item onSelect={() => run(onSave)} className={itemClass}>
-                            <Save size={14} /> Save File
-                        </Command.Item>
-                        <Command.Item onSelect={() => run(onDownload)} className={itemClass}>
-                            <Download size={14} /> Download .md
-                        </Command.Item>
-                        <Command.Item onSelect={() => run(onExportHtml)} className={itemClass}>Export HTML</Command.Item>
-                        <Command.Item onSelect={() => run(onPrint)} className={itemClass}>Print or save PDF</Command.Item>
-                    </Command.Group>
-
-                    <Command.Group heading="View" className="mb-2 text-xs font-medium text-neutral-500 px-2">
-                        <Command.Item onSelect={() => run(togglePreview)} className={itemClass}>
-                            <Eye size={14} /> Toggle Preview
-                        </Command.Item>
-                        <Command.Item onSelect={() => run(toggleZenMode)} className={itemClass}>
-                            <Maximize size={14} /> Toggle Zen Mode
-                        </Command.Item>
-                        <Command.Item onSelect={() => run(toggleTheme)} className={itemClass}>
-                            <Sun size={14} /> Toggle Theme
-                        </Command.Item>
-                    </Command.Group>
-
-                    <Command.Group heading="Charts and templates" className="mb-2 text-xs font-medium text-neutral-500 px-2">
-                        {TEMPLATES.map(item => <Command.Item key={item.label} className={itemClass}
-                            onSelect={() => run(() => onInsert(`\n\n${item.source}\n\n`))}>{item.label}</Command.Item>)}
-                    </Command.Group>
-                    <Command.Group heading="Insert" className="mb-2 text-xs font-medium text-neutral-500 px-2">
-                        {EDITOR_TOOLS.map((tool, idx) => (
-                            <Command.Item key={idx} onSelect={() => run(() => onInsert(tool.template))} className={itemClass}>
-                                <tool.icon size={14} /> {tool.label}
-                            </Command.Item>
-                        ))}
-                    </Command.Group>
-                </Command.List>
-            </Command>
-        </div>
-    );
-};
+        action();
+    };
+    const groups = [
+        { label: 'File', items: [
+            { label: 'Open file', action: onOpen }, { label: 'Save file', action: onSave },
+            { label: 'Download Markdown', action: onDownload }, { label: 'Export HTML', action: onExportHtml },
+            { label: 'Print or save PDF', action: onPrint },
+        ] },
+        { label: 'View and editing', items: [
+            { label: 'Find and replace', action: onSearch }, { label: 'Toggle preview', action: togglePreview },
+            { label: 'Toggle Zen mode', action: toggleZenMode }, { label: 'Toggle light/dark theme', action: toggleTheme },
+        ] },
+        { label: 'Charts and templates', items: TEMPLATES.map(item => ({ label: item.label, action: () => onInsert(`\n\n${item.source}\n\n`) })) },
+        { label: 'Formatting', items: EDITOR_TOOLS.map(item => ({ label: item.label, action: () => onInsert(item.template) })) },
+    ];
+    return <dialog ref={dialog} data-theme={theme} aria-labelledby="command-title" className="command-dialog"
+        onKeyDown={event => {
+            if (event.key !== 'Tab') return;
+            const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('input, button, [tabindex="0"]'));
+            if (!controls.length) return;
+            const index = controls.indexOf(document.activeElement as HTMLElement);
+            const next = (index + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
+            event.preventDefault();
+            controls[next].focus();
+        }}
+        onCancel={event => { event.preventDefault(); onOpenChange(false); }}
+        onClick={event => { if (event.target === event.currentTarget) onOpenChange(false); }}>
+        <h2 id="command-title" className="sr-only">Command palette</h2>
+        {open && <Command label="Editor commands">
+            <div className="flex items-center border-b border-divider px-3">
+                <Command.Input ref={input} placeholder="Search commands…" className="h-12 w-full bg-transparent px-2 text-sm outline-none" />
+                <button className="tool-button" aria-label="Close command palette" onClick={() => onOpenChange(false)}>Esc</button>
+            </div>
+            <Command.List className="max-h-[55dvh] overflow-y-auto p-2">
+                <Command.Empty className="p-6 text-center text-sm text-muted">No matching commands.</Command.Empty>
+                {groups.map(group => <Command.Group key={group.label} heading={group.label} className="mb-2 px-2 text-xs text-muted">
+                    {group.items.map(item => <Command.Item key={item.label} onSelect={() => run(item.action)}
+                        className="cursor-pointer rounded px-2 py-2 text-sm text-content data-[selected=true]:bg-surface-hover">{item.label}</Command.Item>)}
+                </Command.Group>)}
+            </Command.List>
+        </Command>}
+    </dialog>;
+}

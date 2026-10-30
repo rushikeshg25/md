@@ -9,7 +9,7 @@ export function remarkHeadings() {
         };
         const visit = (node: Root | RootContent) => {
             if (node.type === 'heading') {
-                const base = textOf(node).trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-') || 'section';
+                const base = textOf(node).trim().toLowerCase().replace(/[^\p{L}\p{M}\p{N}\s_-]/gu, '').replace(/\s/g, '-') || 'section';
                 let slug = base;
                 let index = 0;
                 while (used.has(slug)) slug = `${base}-${++index}`;
