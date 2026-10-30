@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef } from 'react';
+import React, { forwardRef, memo, useMemo } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -20,11 +20,11 @@ interface PreviewProps {
     isDarkMode: boolean;
 }
 
-export const Preview = forwardRef<HTMLDivElement, PreviewProps>(({ content, className, onScroll, isDarkMode }, ref) => {
+export const Preview = memo(forwardRef<HTMLDivElement, PreviewProps>(({ content, className, onScroll, isDarkMode }, ref) => {
 
-    const components: Components = {
+    const components = useMemo<Components>(() => ({
         code(props) {
-            const { children, className, node, ...rest } = props
+            const { children, className } = props
             const match = /language-(\w+)/.exec(className || '')
             const lang = match ? match[1] : ''
 
@@ -32,9 +32,9 @@ export const Preview = forwardRef<HTMLDivElement, PreviewProps>(({ content, clas
                 return <MermaidBlock chart={String(children).replace(/\n$/, '')} isDarkMode={isDarkMode} />
             }
 
-            return <code className={className} {...rest}>{children}</code>
+            return <code className={className}>{children}</code>
         }
-    };
+    }), [isDarkMode]);
 
     return (
         <div
@@ -52,6 +52,6 @@ export const Preview = forwardRef<HTMLDivElement, PreviewProps>(({ content, clas
             </ReactMarkdown>
         </div>
     );
-});
+}));
 
 Preview.displayName = 'Preview';

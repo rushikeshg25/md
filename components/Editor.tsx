@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, forwardRef } from 'react';
+import React, { useCallback, useMemo, forwardRef } from 'react';
 import CodeMirror, { ViewUpdate } from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { EditorView } from '@codemirror/view';
@@ -18,7 +18,7 @@ interface EditorProps {
     value: string;
     onChange: (value: string) => void;
     className?: string;
-    onScroll?: (e: React.UIEvent<HTMLDivElement>) => void;
+    onScroll?: (target: HTMLElement) => void;
     isDarkMode: boolean;
     onStatistics?: (stats: EditorStats) => void; // New prop
 }
@@ -40,10 +40,10 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(({ value, onCreate
         const line = lineObj.number;
         const col = mainSelection.head - lineObj.from + 1;
 
-        // Content stats
-        const text = state.doc.toString();
-        const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-        const charCount = text.length;
+        // Cursor-only updates reuse the counts instead of scanning the document.
+        const text = viewUpdate.docChanged ? state.doc.toString() : null;
+        const wordCount = text === null ? prevStatsRef.current.wordCount : text.trim().split(/\s+/).filter(Boolean).length;
+        const charCount = state.doc.length;
 
         const newStats = { line, col, wordCount, charCount };
         const prev = prevStatsRef.current;
@@ -54,22 +54,30 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(({ value, onCreate
         }
     }, [onStatistics]);
 
+    const extensions = useMemo(() => [
+        markdown({ base: markdownLanguage }),
+        EditorView.lineWrapping,
+        EditorView.domEventHandlers({ scroll: (_event, view) => { onScroll?.(view.scrollDOM); } }),
+    ], [onScroll]);
+
     return (
         <div
             ref={ref}
-            onScroll={onScroll}
             className={`h-full w-full overflow-auto ${className}`}
             style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff' }}
         >
             <CodeMirror
-                onCreateEditor={onCreateEditor}
+                onCreateEditor={view => {
+                    const text = view.state.doc.toString();
+                    const stats = { line: 1, col: 1, wordCount: text.trim().split(/\s+/).filter(Boolean).length, charCount: text.length };
+                    prevStatsRef.current = stats;
+                    onStatistics?.(stats);
+                    onCreateEditor?.(view);
+                }}
                 aria-label="Markdown source"
                 value={value}
                 height="100%"
-                extensions={[
-                    markdown({ base: markdownLanguage }),
-                    EditorView.lineWrapping,
-                ]}
+                extensions={extensions}
                 onChange={handleChange}
                 onUpdate={handleStatistics} // Hook into updates
                 theme={isDarkMode ? vscodeDark : vscodeLight}

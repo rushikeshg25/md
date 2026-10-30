@@ -20,13 +20,22 @@ export const useMarkdownFile = () => {
 
     useEffect(() => {
         if (!ready) return;
-        const saved = saveToLocalStorage(content, filename);
-        // Report the outcome of syncing this document to browser storage.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setMessage(saved ? 'Draft saved in this browser' : 'Draft could not be saved. Download a copy.');
+        const persist = () => {
+            const saved = saveToLocalStorage(content, filename);
+            setMessage(saved ? 'Draft saved in this browser' : 'Draft could not be saved. Download a copy.');
+        };
+        const timer = window.setTimeout(persist, 250);
+        const onVisibility = () => { if (document.visibilityState === 'hidden') persist(); };
+        window.addEventListener('pagehide', persist);
+        document.addEventListener('visibilitychange', onVisibility);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('pagehide', persist);
+            document.removeEventListener('visibilitychange', onVisibility);
+        };
     }, [content, filename, ready]);
 
-    const handleChange = useCallback((value: string) => setContent(value), []);
+    const handleChange = useCallback((value: string) => { setContent(value); setMessage('Saving draft…'); }, []);
     const handleOpen = useCallback(async () => {
         if (content && !window.confirm('Replace the current document? Download a copy first if you need to keep it.')) return;
         try {

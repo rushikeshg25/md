@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useDeferredValue } from 'react';
 import { EditorSelection } from '@codemirror/state';
 import type { EditorView } from '@codemirror/view';
 import { formatSelection } from '@/lib/editing';
@@ -26,6 +26,7 @@ export default function Home() {
         handleDownload
     } = useMarkdownFile();
 
+    const previewContent = useDeferredValue(content);
     const editorView = useRef<EditorView | null>(null);
     const handleInsert = useCallback((template: string) => {
         const view = editorView.current;
@@ -57,6 +58,8 @@ export default function Home() {
 
     // Custom Hooks
     const { editorRef, previewRef, handleScroll } = useScrollSync();
+    const scrollEditor = useCallback((target: HTMLElement) => handleScroll('editor', target), [handleScroll]);
+    const scrollPreview = useCallback((event: React.UIEvent<HTMLDivElement>) => handleScroll('preview', event.currentTarget), [handleScroll]);
     const { width: editorWidth, startResizing } = useResizable(50);
 
     const handleStats = useCallback((s: EditorStats) => {
@@ -135,7 +138,7 @@ export default function Home() {
                         onCreateEditor={view => { editorView.current = view; }}
                         value={content}
                         onChange={handleChange}
-                        onScroll={(e) => handleScroll('editor', e)}
+                        onScroll={scrollEditor}
                         isDarkMode={isDarkMode}
                         onStatistics={handleStats} // Update stats
                     />}
@@ -157,8 +160,8 @@ export default function Home() {
                         >
                             <Preview
                                 ref={previewRef}
-                                content={content}
-                                onScroll={(e) => handleScroll('preview', e)}
+                                content={previewContent}
+                                onScroll={scrollPreview}
                                 isDarkMode={isDarkMode}
                             />
                         </div>
