@@ -98,15 +98,13 @@ export default function Home() {
 
     return (
         <main data-theme={theme} data-layout={effectiveLayout} data-reading={readingMode || undefined} className={`flex flex-col h-dvh ${isDarkMode ? 'dark' : ''} bg-canvas text-content relative print:h-auto print:overflow-visible print:bg-white`}>
-            {!zenMode && !readingMode && <>
-                <div className="print:hidden">
-                    <Toolbar filename={filename} status={`${exportNotice || message}${warning ? ` · ${warning}` : ''}`} onInsert={handleInsert} onSave={handleSave} onOpen={handleOpen} onDownload={handleDownload}
-                        onExportHtml={handleExportHtml} onPrint={handlePrint} layout={effectiveLayout} onLayoutChange={setLayout} onReadingMode={() => setReadingMode(true)}
-                        isNarrow={isNarrow} onSearch={handleSearch} theme={preferences.theme} onThemeChange={theme => updatePreferences({ theme })}
-                        toggleZenMode={() => setZenMode(true)} openCommandPalette={() => setCommandPaletteOpen(true)} />
-                </div>
+            {!zenMode && !readingMode && <div className="editor-chrome print:hidden">
+                <Toolbar filename={filename} status={`${exportNotice || message}${warning ? ` · ${warning}` : ''}`} onInsert={handleInsert} onSave={handleSave} onOpen={handleOpen} onDownload={handleDownload}
+                    onExportHtml={handleExportHtml} onPrint={handlePrint} layout={effectiveLayout} onLayoutChange={setLayout} onReadingMode={() => setReadingMode(true)}
+                    isNarrow={isNarrow} onSearch={handleSearch} theme={preferences.theme} onThemeChange={theme => updatePreferences({ theme })}
+                    toggleZenMode={() => setZenMode(true)} openCommandPalette={() => setCommandPaletteOpen(true)} />
                 <MarkdownSettings extensions={preferences.extensions} onChange={extensions => updatePreferences({ extensions })} />
-            </>}
+            </div>}
             {readingMode && <div className="flex shrink-0 justify-end px-4 py-2 print:hidden">
                 <button ref={exitReadingButton} onClick={exitReadingMode} className="rounded border border-divider bg-surface px-3 py-2 text-sm text-content" title="Exit reading mode (Esc)">Exit reading mode</button>
             </div>}
