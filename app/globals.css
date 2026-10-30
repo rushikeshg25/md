@@ -110,8 +110,8 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 .toolbar-selectors { display: flex; gap: 10px; }
 .toolbar-control { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px; min-width: 0; }
 .toolbar-control > span { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); }
-.toolbar-control select { grid-area: 2 / 1; appearance: none; max-width: 170px; min-width: 110px; min-height: 34px; padding: 5px 32px 5px 8px; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-primary); color: var(--text-primary); font-size: 12px; }
-.toolbar-control::after { content: ''; grid-area: 2 / 1; justify-self: end; align-self: center; width: 6px; height: 6px; margin: -3px 12px 0 0; border-right: 1.5px solid var(--text-secondary); border-bottom: 1.5px solid var(--text-secondary); transform: rotate(45deg); pointer-events: none; }
+.toolbar-control select { grid-area: 2 / 1; appearance: none; max-width: 170px; min-width: 110px; min-height: 34px; padding: 5px 36px 5px 8px; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-primary); color: var(--text-primary); font-size: 12px; }
+.toolbar-control::after { content: ''; grid-area: 2 / 1; justify-self: end; align-self: center; width: 6px; height: 6px; margin: -3px 16px 0 0; border-right: 1.5px solid var(--text-secondary); border-bottom: 1.5px solid var(--text-secondary); transform: rotate(45deg); pointer-events: none; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 main .cm-editor, main .cm-gutters { background: var(--bg-primary); color: var(--text-primary); }
