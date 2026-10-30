@@ -45,6 +45,7 @@ export default function Home() {
     const handleInsert = useCallback((template: string) => {
         const view = editorView.current;
         if (!view) return;
+        setReadingMode(false);
         view.dispatch(view.state.changeByRange(range => {
             const insert = formatSelection(template, view.state.sliceDoc(range.from, range.to));
             return { changes: { from: range.from, to: range.to, insert }, range: EditorSelection.cursor(range.from + insert.length) };
@@ -53,10 +54,10 @@ export default function Home() {
         requestAnimationFrame(() => view.focus());
     }, [effectiveLayout]);
     const handleSearch = () => {
+        setReadingMode(false);
         if (effectiveLayout === 'preview') setLayout('editor');
         requestAnimationFrame(() => { if (editorView.current) openSearchPanel(editorView.current); });
     };
-    const togglePreview = () => setLayout(effectiveLayout === 'editor' ? (isNarrow ? 'preview' : 'split') : 'editor');
     const exportReady = () => {
         const article = previewRef.current?.querySelector<HTMLElement>('[data-document]');
         if (!article || previewContent !== content || article.querySelector('[aria-busy="true"]')) {
@@ -113,10 +114,12 @@ export default function Home() {
                 <button ref={exitReadingButton} onClick={exitReadingMode} className="rounded border border-divider bg-surface px-3 py-2 text-sm text-content" title="Exit reading mode (Esc)">Exit reading mode</button>
             </div>}
             {zenMode && <button onClick={() => setZenMode(false)} className="absolute top-3 right-3 z-50 rounded border border-divider bg-surface p-2 text-content shadow print:hidden" aria-label="Exit Zen mode" title="Exit Zen mode (Esc)"><Maximize size={20} /></button>}
-            {!readingMode && <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} onOpen={handleOpen} onSave={handleSave}
+            <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} onOpen={handleOpen} onSave={handleSave}
                 onDownload={handleDownload} onExportHtml={handleExportHtml} onPrint={handlePrint} onSearch={handleSearch}
-                togglePreview={togglePreview} toggleTheme={() => updatePreferences({ theme: isDarkMode ? 'light' : 'dark' })}
-                toggleZenMode={() => setZenMode(value => !value)} onInsert={handleInsert} theme={theme} />}
+                layout={effectiveLayout} isNarrow={isNarrow} onLayoutChange={next => { setReadingMode(false); setLayout(next); }}
+                readingMode={readingMode} toggleReadingMode={() => { if (readingMode) exitReadingMode(); else { setZenMode(false); setReadingMode(true); } }}
+                zenMode={zenMode} toggleZenMode={() => { setReadingMode(false); setZenMode(value => !value); }}
+                preferences={preferences} onPreferencesChange={updatePreferences} onInsert={handleInsert} theme={theme} />
             <div ref={containerRef} className="workspace flex-1 min-h-0 flex overflow-hidden relative print:overflow-visible print:h-auto print:block">
                 <div className={`editor-pane min-w-0 h-full ${effectiveLayout === 'preview' ? 'hidden' : ''} print:hidden`}
                     style={{ width: effectiveLayout === 'split' ? `${editorWidth}%` : '100%' }}>

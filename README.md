@@ -14,7 +14,7 @@ A local-first Markdown editor built with Next.js, React and CodeMirror. Write in
 - Local draft recovery, including empty documents, with visible storage errors.
 - Local Markdown file import/save, with file-input and download fallbacks for browsers without native file pickers.
 - Markdown download, portable HTML export with SVG and MathML, and print/PDF through the browser.
-- A searchable command palette and Zen mode with a visible exit.
+- A searchable Ctrl/Cmd+K command palette with grouped file actions, view modes, formatting, templates, all themes and Markdown extension toggles. Available in Reading and Zen modes too, with current settings marked.
 
 See the [Markdown guide](docs/markdown-guide.md) for syntax and the [research notes](docs/editor-research.md) for the feature comparison and sources.
 

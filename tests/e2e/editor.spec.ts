@@ -209,6 +209,63 @@ test('command palette traps focus, filters commands and restores focus', async (
     await expect(source(page)).toContainText('pie showData');
 });
 
+test('command palette controls views, themes and extensions, including from reading mode', async ({ page, isMobile }, testInfo) => {
+    await write(page, '# Commands\n\n$x^2$');
+    const dialog = page.getByRole('dialog', { name: 'Command palette' });
+    const open = async () => {
+        await page.keyboard.press('ControlOrMeta+k');
+        await expect(dialog).toBeVisible();
+        await expect(dialog.getByRole('combobox')).toBeFocused();
+    };
+    const run = async (label: string) => {
+        await open();
+        await dialog.getByRole('combobox').fill(label);
+        await dialog.getByRole('option', { name: label, exact: true }).click();
+        await expect(dialog).toBeHidden();
+    };
+    await open();
+    await expect(dialog.getByRole('option', { name: 'Split view', exact: true })).toHaveCount(isMobile ? 0 : 1);
+    await expect(dialog.locator('[cmdk-group-heading]')).toHaveText(['Files & export', 'View & focus', 'Editing', 'Charts', 'Diagrams', 'Markdown templates', 'Themes', 'Markdown extensions']);
+    await page.screenshot({ path: testInfo.outputPath('command-menu-light.png'), fullPage: true });
+    await dialog.getByRole('combobox').fill('no matching action 123');
+    await expect(dialog.getByText(/No matching commands/)).toBeVisible();
+    await page.keyboard.press('Escape');
+    await run('Reading mode');
+    await expect(page.getByRole('button', { name: 'Exit reading mode' })).toBeVisible();
+    await expect(source(page)).toBeHidden();
+    await run('Midnight theme');
+    await expect(page.locator('main')).toHaveAttribute('data-theme', 'midnight');
+    await open();
+    await dialog.getByRole('combobox').fill('theme');
+    await expect(dialog.getByRole('option')).toHaveCount(5);
+    await expect(dialog.getByRole('option', { name: 'Midnight theme', exact: true })).toContainText('Current');
+    await page.screenshot({ path: testInfo.outputPath('command-menu-midnight.png'), fullPage: true });
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('button', { name: 'Exit reading mode' })).toBeVisible();
+    await run('Disable Math');
+    await expect(page.locator('[data-document] .katex')).toHaveCount(0);
+    await run('Enable Math');
+    await expect(page.locator('[data-document] .katex')).toBeVisible();
+    await run('Preview view');
+    await expect(page.getByRole('combobox', { name: 'View', exact: true })).toHaveValue('preview');
+    if (!isMobile) {
+        await run('Split view');
+        await expect(page.getByRole('separator', { name: 'Resize editor' })).toBeVisible();
+    }
+    await run('Editor view');
+    await expect(source(page)).toBeVisible();
+    await run('Zen mode');
+    await expect(page.getByRole('button', { name: 'Exit Zen mode' })).toBeVisible();
+    await run('Reading mode');
+    await expect(page.getByRole('button', { name: 'Exit Zen mode' })).toBeHidden();
+    await expect(source(page)).toBeHidden();
+    await run('Note callout');
+    await expect(source(page)).toBeVisible();
+    await expect(source(page)).toContainText('[!NOTE]');
+    await page.reload();
+    await expect(page.locator('main')).toHaveAttribute('data-theme', 'midnight');
+});
+
 test('outline, copy controls and external links work', async ({ page }) => {
     await page.evaluate(() => {
         Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (text: string) => sessionStorage.setItem('copied', text) }, configurable: true });

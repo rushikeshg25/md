@@ -281,8 +281,25 @@ code.hljs {
   .markdown-body .hljs span { color: #111 !important; }
 }
 
-.command-dialog { width: min(600px, 90vw); max-height: 80dvh; margin: 12vh auto auto; padding: 0; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-secondary); color: var(--text-primary); box-shadow: 0 20px 80px #0006; }
+.command-dialog { width: min(640px, calc(100vw - 24px)); max-height: 85dvh; margin: 8dvh auto auto; padding: 0; overflow: hidden; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-primary); color: var(--text-primary); box-shadow: 0 24px 80px #0006; }
 .command-dialog::backdrop { background: #0008; backdrop-filter: blur(3px); }
+.command-search { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+.command-search input { flex: 1; min-width: 0; height: 28px; background: transparent; color: var(--text-primary); font-size: 16px; outline: none; }
+.command-search button { padding: 4px; border-radius: 6px; }
+.command-dialog kbd { padding: 2px 5px; border: 1px solid var(--border-color); border-radius: 4px; font: 11px ui-monospace, monospace; white-space: nowrap; color: var(--text-secondary); background: var(--bg-secondary); }
+.command-list { max-height: 60dvh; overflow-y: auto; overscroll-behavior: contain; padding: 8px; scroll-padding-block: 8px; }
+.command-list [cmdk-group] + [cmdk-group] { margin-top: 8px; }
+.command-list [cmdk-group-heading] { padding: 10px 12px; margin-bottom: 4px; border-bottom: 1px solid var(--border-color); border-radius: 6px 6px 0 0; background: var(--bg-secondary); color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+.command-item { display: flex; align-items: center; gap: 12px; min-height: 42px; margin: 2px 0; padding: 10px 12px; border-radius: 8px; cursor: pointer; }
+.command-item[data-selected="true"] { background: var(--bg-tertiary); box-shadow: inset 3px 0 var(--accent); }
+.command-icon { flex-shrink: 0; color: var(--text-secondary); }
+.command-item[data-selected="true"] .command-icon { color: var(--accent); }
+.command-item-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; gap: 3px; }
+.command-item-label { font-size: 14px; font-weight: 500; }
+.command-item-description { font-size: 12px; line-height: 1.4; color: var(--text-secondary); }
+.command-state { display: flex; align-items: center; flex-shrink: 0; font-size: 11px; font-weight: 600; color: var(--accent); }
+.command-empty { padding: 32px 20px; text-align: center; font-size: 14px; color: var(--text-secondary); }
+.command-footer { display: flex; flex-wrap: wrap; gap: 16px; padding: 10px 18px; border-top: 1px solid var(--border-color); font-size: 11px; color: var(--text-secondary); background: var(--bg-secondary); }
 .document-status { overflow-wrap: anywhere; }
 @media (max-width: 767px) {
   .toolbar { gap: 6px; }
