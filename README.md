@@ -5,6 +5,7 @@ A local-first Markdown editor built with Next.js, React and CodeMirror. Write in
 ## Features
 
 - Editor, split and preview views. Phones use a full-width editor/preview switch.
+- Choose **View → Reading mode** for a centered Markdown preview without editing controls. Use **Exit reading mode** or Escape to return to the previous view.
 - Cursor-aware formatting, undo/redo, find/replace, synchronized scrolling and a keyboard-accessible divider.
 - System, Light, Dark, Sepia and Midnight themes with saved preferences.
 - Configurable Markdown extensions: GitHub tables/tasks/footnotes, KaTeX math, Mermaid diagrams/charts, syntax highlighting, single-line breaks and GitHub alerts.

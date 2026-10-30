@@ -90,6 +90,39 @@ test('code blocks share one background across themes and print', async ({ page }
     }
 });
 
+test('reading mode hides editing controls and restores the previous view', async ({ page, isMobile }, testInfo) => {
+    await write(page, '# Reading mode\n\nKeep **this document**.');
+    const view = page.getByRole('combobox', { name: 'View', exact: true });
+    for (const previous of isMobile ? ['editor', 'preview'] : ['editor', 'split', 'preview']) {
+        await view.selectOption(previous);
+        await view.selectOption('reading');
+        await expect(page.locator('main')).toHaveAttribute('data-layout', 'preview');
+        await expect(source(page)).toBeHidden();
+        await expect(view).toBeHidden();
+        await expect(page.getByRole('group', { name: 'Formatting', exact: true })).toBeHidden();
+        await expect(page.getByText('Markdown extensions', { exact: true })).toBeHidden();
+        await expect(page.locator('[data-document] h1')).toHaveText('Reading mode');
+        await expect(page.locator('[data-document] strong')).toHaveText('this document');
+        const exit = page.getByRole('button', { name: 'Exit reading mode', exact: true });
+        await expect(exit).toBeFocused();
+        const documentBox = await page.locator('[data-document]').boundingBox();
+        expect(documentBox!.width).toBeLessThanOrEqual(900);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+        await page.screenshot({ path: testInfo.outputPath(`reading-${previous}.png`), fullPage: true });
+        if (previous === 'editor') await exit.click();
+        else await page.keyboard.press('Escape');
+        await expect(view).toHaveValue(previous);
+        await expect(view).toBeFocused();
+    }
+    await view.selectOption('editor');
+    await expect(source(page)).toContainText('Keep **this document**.');
+    await source(page).press('ControlOrMeta+End');
+    await page.keyboard.insertText(' Still editable.');
+    await expect(source(page)).toContainText('Still editable.');
+    await source(page).press('ControlOrMeta+z');
+    await expect(source(page)).not.toContainText('Still editable.');
+});
+
 test('extension settings change rendering and persist', async ({ page }) => {
     await write(page, '# Example\n\n~~old~~\n\n$x^2$\n\n> [!NOTE]\n> Read this.');
     await preview(page);

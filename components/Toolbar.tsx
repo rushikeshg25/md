@@ -15,6 +15,7 @@ interface ToolbarProps {
     onPrint: () => void;
     layout: 'editor' | 'split' | 'preview';
     onLayoutChange: (layout: 'editor' | 'split' | 'preview') => void;
+    onReadingMode: () => void;
     isNarrow: boolean;
     onSearch: () => void;
     toggleZenMode: () => void;
@@ -23,7 +24,7 @@ interface ToolbarProps {
     onThemeChange: (theme: Theme) => void;
 }
 
-export function Toolbar({ onInsert, onSave, onOpen, onDownload, onExportHtml, onPrint, layout, onLayoutChange, isNarrow, onSearch, toggleZenMode, openCommandPalette, theme, onThemeChange }: ToolbarProps) {
+export function Toolbar({ onInsert, onSave, onOpen, onDownload, onExportHtml, onPrint, layout, onLayoutChange, onReadingMode, isNarrow, onSearch, toggleZenMode, openCommandPalette, theme, onThemeChange }: ToolbarProps) {
     const actions = [
         { label: 'Open file', icon: FolderOpen, action: onOpen },
         { label: 'Command palette', icon: CommandIcon, action: openCommandPalette },
@@ -60,11 +61,15 @@ export function Toolbar({ onInsert, onSave, onOpen, onDownload, onExportHtml, on
                             {TEMPLATES.filter(item => item.category === category).map(item => <option key={item.label}>{item.label}</option>)}
                         </optgroup>)}
                     </select>
-                    <select aria-label="View" value={layout} onChange={event => onLayoutChange(event.target.value as ToolbarProps['layout'])}
+                    <select aria-label="View" value={layout} onChange={event => {
+                        if (event.target.value === 'reading') onReadingMode();
+                        else onLayoutChange(event.target.value as ToolbarProps['layout']);
+                    }}
                         className="rounded border border-divider bg-canvas p-2 text-sm text-content">
                         <option value="editor">Editor</option>
                         {!isNarrow && <option value="split">Split</option>}
                         <option value="preview">Preview</option>
+                        <option value="reading">Reading mode</option>
                     </select>
                     <select aria-label="Theme" value={theme} onChange={event => onThemeChange(event.target.value as Theme)}
                         className="rounded border border-divider bg-canvas p-2 text-sm text-content capitalize">

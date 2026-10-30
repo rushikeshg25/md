@@ -80,6 +80,7 @@ main .markdown-body {
 .markdown-body .diagram-block { white-space: normal; }
 .markdown-body .diagram-block svg { max-width: 100%; height: auto; }
 .markdown-body img { max-width: 100%; }
+main[data-reading] .preview-pane > div > :is(.markdown-body, .document-outline) { max-width: 900px; margin-inline: auto; }
 
 /* ========================================= */
 /* Highlight.js Themes (Manually Managed)    */

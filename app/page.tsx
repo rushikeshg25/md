@@ -25,8 +25,10 @@ export default function Home() {
     const { content, filename, ready, message, handleChange, handleOpen, handleSave, handleDownload } = useMarkdownFile();
     const { preferences, updatePreferences, theme, isDarkMode, warning } = usePreferences();
     const [layout, setLayout] = useState<Layout>('split');
+    const [readingMode, setReadingMode] = useState(false);
+    const exitReadingButton = useRef<HTMLButtonElement>(null);
     const isNarrow = useMediaQuery('(max-width: 767px)');
-    const effectiveLayout = isNarrow && layout === 'split' ? 'editor' : layout;
+    const effectiveLayout = readingMode ? 'preview' : isNarrow && layout === 'split' ? 'editor' : layout;
     const [zenMode, setZenMode] = useState(false);
     const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
     const [exportNotice, setExportNotice] = useState('');
@@ -69,6 +71,14 @@ export default function Home() {
         if (article) downloadFile(buildHtmlDocument(filename, renderedDocumentHtml(article)), exportFilename(filename), 'text/html;charset=utf-8');
     };
     const handlePrint = () => { if (exportReady()) window.print(); };
+    const exitReadingMode = useCallback(() => {
+        setReadingMode(false);
+        requestAnimationFrame(() => document.querySelector<HTMLSelectElement>('select[aria-label="View"]')?.focus());
+    }, []);
+
+    useEffect(() => {
+        if (readingMode) exitReadingButton.current?.focus();
+    }, [readingMode]);
 
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
@@ -76,31 +86,37 @@ export default function Home() {
                 event.preventDefault();
                 void handleSave();
             }
-            if (event.key === 'Escape' && zenMode && !commandPaletteOpen) setZenMode(false);
+            if (event.key === 'Escape' && !commandPaletteOpen) {
+                if (readingMode) exitReadingMode();
+                else if (zenMode) setZenMode(false);
+            }
         };
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
-    }, [handleSave, zenMode, commandPaletteOpen]);
+    }, [handleSave, zenMode, commandPaletteOpen, readingMode, exitReadingMode]);
 
     return (
-        <main data-theme={theme} data-layout={effectiveLayout} className={`flex flex-col h-dvh ${isDarkMode ? 'dark' : ''} bg-canvas text-content relative print:h-auto print:overflow-visible print:bg-white`}>
-            {!zenMode && <>
+        <main data-theme={theme} data-layout={effectiveLayout} data-reading={readingMode || undefined} className={`flex flex-col h-dvh ${isDarkMode ? 'dark' : ''} bg-canvas text-content relative print:h-auto print:overflow-visible print:bg-white`}>
+            {!zenMode && !readingMode && <>
                 <div className="document-status px-3 py-1 text-xs bg-surface text-muted print:hidden">
                     <span className="font-medium">{filename}</span><span role="status"> · {exportNotice || message}{warning && ` · ${warning}`}</span>
                 </div>
                 <div className="print:hidden">
                     <Toolbar onInsert={handleInsert} onSave={handleSave} onOpen={handleOpen} onDownload={handleDownload}
-                        onExportHtml={handleExportHtml} onPrint={handlePrint} layout={effectiveLayout} onLayoutChange={setLayout}
+                        onExportHtml={handleExportHtml} onPrint={handlePrint} layout={effectiveLayout} onLayoutChange={setLayout} onReadingMode={() => setReadingMode(true)}
                         isNarrow={isNarrow} onSearch={handleSearch} theme={preferences.theme} onThemeChange={theme => updatePreferences({ theme })}
                         toggleZenMode={() => setZenMode(true)} openCommandPalette={() => setCommandPaletteOpen(true)} />
                 </div>
                 <MarkdownSettings extensions={preferences.extensions} onChange={extensions => updatePreferences({ extensions })} />
             </>}
+            {readingMode && <div className="flex shrink-0 justify-end px-4 py-2 print:hidden">
+                <button ref={exitReadingButton} onClick={exitReadingMode} className="rounded border border-divider bg-surface px-3 py-2 text-sm text-content" title="Exit reading mode (Esc)">Exit reading mode</button>
+            </div>}
             {zenMode && <button onClick={() => setZenMode(false)} className="absolute top-3 right-3 z-50 rounded border border-divider bg-surface p-2 text-content shadow print:hidden" aria-label="Exit Zen mode" title="Exit Zen mode (Esc)"><Maximize size={20} /></button>}
-            <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} onOpen={handleOpen} onSave={handleSave}
+            {!readingMode && <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} onOpen={handleOpen} onSave={handleSave}
                 onDownload={handleDownload} onExportHtml={handleExportHtml} onPrint={handlePrint} onSearch={handleSearch}
                 togglePreview={togglePreview} toggleTheme={() => updatePreferences({ theme: isDarkMode ? 'light' : 'dark' })}
-                toggleZenMode={() => setZenMode(value => !value)} onInsert={handleInsert} theme={theme} />
+                toggleZenMode={() => setZenMode(value => !value)} onInsert={handleInsert} theme={theme} />}
             <div ref={containerRef} className="workspace flex-1 min-h-0 flex overflow-hidden relative print:overflow-visible print:h-auto print:block">
                 <div className={`editor-pane min-w-0 h-full ${effectiveLayout === 'preview' ? 'hidden' : ''} print:hidden`}
                     style={{ width: effectiveLayout === 'split' ? `${editorWidth}%` : '100%' }}>
@@ -115,7 +131,7 @@ export default function Home() {
                     <Preview ref={previewRef} extensions={preferences.extensions} content={previewContent} onScroll={scrollPreview} isDarkMode={isDarkMode} />
                 </div>
             </div>
-            {!zenMode && <div className="print:hidden"><StatusBar wordCount={stats.wordCount} charCount={stats.charCount} cursorLine={stats.line} cursorCol={stats.col} /></div>}
+            {!zenMode && !readingMode && <div className="print:hidden"><StatusBar wordCount={stats.wordCount} charCount={stats.charCount} cursorLine={stats.line} cursorCol={stats.col} /></div>}
         </main>
     );
 }
