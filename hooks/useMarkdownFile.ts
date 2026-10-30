@@ -1,69 +1,52 @@
 import { useState, useEffect, useCallback } from 'react';
-import { loadFromLocalStorage, saveToLocalStorage, openFile, saveFile as saveFileToDisk } from '@/lib/storage';
+import { loadFromLocalStorage, saveToLocalStorage, openFile, saveFile, downloadFile, isCancelled } from '@/lib/storage';
 
 const INITIAL_CONTENT = '# Welcome to Markdown Editor\n\nStart typing...';
 
 export const useMarkdownFile = () => {
-    const [content, setContent] = useState<string>('');
-    const [filename, setFilename] = useState<string>('Untitled.md');
+    const [content, setContent] = useState('');
+    const [filename, setFilename] = useState('Untitled.md');
+    const [ready, setReady] = useState(false);
+    const [message, setMessage] = useState('Loading draft…');
 
-    // Load from local storage on mount
     useEffect(() => {
-        const { content: savedContent, filename: savedFilename } = loadFromLocalStorage();
-        setContent(savedContent || INITIAL_CONTENT);
-        if (savedFilename) setFilename(savedFilename);
+        const draft = loadFromLocalStorage();
+        // Hydrate browser-only storage after the server and first client render agree.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setContent(draft.content ?? INITIAL_CONTENT);
+        setFilename(draft.filename ?? 'Untitled.md');
+        setReady(true);
     }, []);
 
-    // Handle content change and auto-save to local storage
-    const handleChange = useCallback((val: string) => {
-        setContent(val);
-        // We use the current filename state for local storage key if we wanted per-file keys, 
-        // but current storage.ts implementation seems global. 
-        // Passing filename to saveToLocalStorage as per existing logic.
-        saveToLocalStorage(val, filename); 
-    }, [filename]);
+    useEffect(() => {
+        if (!ready) return;
+        const saved = saveToLocalStorage(content, filename);
+        // Report the outcome of syncing this document to browser storage.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMessage(saved ? 'Draft saved in this browser' : 'Draft could not be saved. Download a copy.');
+    }, [content, filename, ready]);
 
-    const handleInsert = useCallback((template: string) => {
-        setContent(prev => prev + template);
-    }, []);
-
+    const handleChange = useCallback((value: string) => setContent(value), []);
+    const handleInsert = useCallback((template: string) => setContent(previous => previous + template), []);
     const handleOpen = useCallback(async () => {
+        if (content && !window.confirm('Replace the current document? Download a copy first if you need to keep it.')) return;
         try {
-            const { content: fileContent, name } = await openFile();
-            setContent(fileContent);
-            setFilename(name);
-            saveToLocalStorage(fileContent, name);
+            const file = await openFile();
+            setContent(file.content);
+            setFilename(file.name);
         } catch (error) {
-            // Ignored (e.g. user cancel)
-        }
-    }, []);
-
-    const handleSave = useCallback(async () => {
-        try {
-            await saveFileToDisk(content);
-        } catch (error) {
-            // Ignored
+            if (!isCancelled(error)) setMessage('Could not open the file. Try again or paste its contents.');
         }
     }, [content]);
-
-    const handleDownload = useCallback(() => {
-        const blob = new Blob([content], { type: 'text/markdown' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename || 'document.md';
-        a.click();
-        URL.revokeObjectURL(url);
+    const handleSave = useCallback(async () => {
+        try {
+            await saveFile(content, filename);
+            setMessage('File saved or download started');
+        } catch (error) {
+            if (!isCancelled(error)) setMessage('Could not save the file. Use Download to keep a copy.');
+        }
     }, [content, filename]);
+    const handleDownload = useCallback(() => downloadFile(content, filename), [content, filename]);
 
-    return {
-        content,
-        filename,
-        setContent,
-        handleChange,
-        handleInsert,
-        handleOpen,
-        handleSave,
-        handleDownload
-    };
+    return { content, filename, ready, message, handleChange, handleInsert, handleOpen, handleSave, handleDownload };
 };

@@ -13,6 +13,9 @@ import { useMarkdownFile } from '@/hooks/useMarkdownFile';
 export default function Home() {
     const {
         content,
+        filename,
+        ready,
+        message,
         handleChange,
         handleInsert,
         handleOpen,
@@ -54,6 +57,7 @@ export default function Home() {
 
     return (
         <main className={`flex flex-col h-screen ${isDarkMode ? 'dark' : ''} bg-canvas text-content transition-colors duration-300 relative print:h-auto print:overflow-visible print:bg-white`}>
+            <div role="status" className="px-3 py-1 text-xs bg-surface text-muted print:hidden">{filename} · {message}</div>
             {/* Toolbar hidden in Zen Mode and Print */}
             {!zenMode && (
                 <div className="print:hidden">
@@ -102,14 +106,14 @@ export default function Home() {
                     className={`transition-all duration-75 ${showPreview ? '' : 'w-full'} border-r border-divider print:hidden`}
                     style={{ width: showPreview ? `${editorWidth}%` : '100%' }}
                 >
-                    <Editor
+                    {ready && <Editor
                         ref={editorRef}
                         value={content}
                         onChange={handleChange}
                         onScroll={(e) => handleScroll('editor', e)}
                         isDarkMode={isDarkMode}
                         onStatistics={handleStats} // Update stats
-                    />
+                    />}
                 </div>
 
                 {showPreview && (
