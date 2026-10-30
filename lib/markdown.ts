@@ -1,3 +1,4 @@
+import { remarkHeadings } from './headings.ts';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkBreaks from 'remark-breaks';
@@ -27,7 +28,7 @@ export function remarkAlerts() {
 }
 
 export function markdownPlugins(options: Preferences['extensions']) {
-    const remarkPlugins: PluggableList = [];
+    const remarkPlugins: PluggableList = [remarkHeadings];
     const rehypePlugins: PluggableList = [];
     if (options.gfm) remarkPlugins.push(remarkGfm);
     if (options.math) { remarkPlugins.push(remarkMath); rehypePlugins.push([rehypeKatex, { trust: false }]); }

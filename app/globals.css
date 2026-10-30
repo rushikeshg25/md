@@ -259,3 +259,5 @@ code.hljs {
 .markdown-body .markdown-alert-important { border-left-color: #8957e5; }
 .markdown-body .markdown-alert-warning { border-left-color: #9a6700; }
 .markdown-body .markdown-alert-caution { border-left-color: #cf222e; }
+.markdown-body .code-block pre { padding-top: 3rem; }
+.markdown-body :is(h1,h2,h3,h4,h5,h6) { scroll-margin-top: 1rem; }

@@ -30,3 +30,10 @@ test('unknown languages retain source and untrusted settings are ignored', () =>
   assert.equal(parsePreferences('{"extensions":{"math":"yes","breaks":false}}').extensions.math, true);
   assert.equal(parsePreferences('{"extensions":{"breaks":false}}').extensions.breaks, false);
 });
+test('headings have stable unique anchors, including duplicate and Unicode titles', () => {
+  const html = render('# Hello **world**\n\n## Hello world\n\n## Hello world-1\n\n## नमस्ते\n\n```md\n# not a heading\n```');
+  assert.match(html, /id="md-hello-world"/);
+  assert.match(html, /id="md-hello-world-1"/);
+  assert.match(html, /id="md-hello-world-1-1"/);
+  assert.doesNotMatch(html, /id="md-not-a-heading"/);
+});
