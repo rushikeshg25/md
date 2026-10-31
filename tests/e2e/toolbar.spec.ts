@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { THEMES, THEME_LABELS, isDarkTheme } from '../../lib/preferences';
 
 // These widths include the smallest supported phone and the desktop breakpoint.
-test('toolbar actions fit narrow screens and expanded settings leave room to edit', async ({ page }, testInfo) => {
+test('toolbar actions fit narrow screens and extensions stay accessible without a separate bar', async ({ page }, testInfo) => {
     await page.addInitScript(() => localStorage.setItem('markdown-editor-draft', JSON.stringify({
         filename: 'a-very-long-document-name-that-must-not-push-controls-offscreen.md',
         content: '# Responsive toolbar\n\nKeep the editor usable.',
@@ -23,11 +23,17 @@ test('toolbar actions fit narrow screens and expanded settings leave room to edi
         await page.screenshot({ path: testInfo.outputPath(`toolbar-${width}.png`), fullPage: true });
     }
     await page.setViewportSize({ width: 320, height: 568 });
-    await page.locator('.markdown-settings summary').click();
+    await expect(page.locator('.markdown-settings')).toHaveCount(0);
     expect((await page.locator('.workspace').boundingBox())!.height).toBeGreaterThan(200);
-    await page.getByRole('checkbox', { name: /^GitHub alerts/ }).uncheck();
-    await expect(page.getByRole('checkbox', { name: /^GitHub alerts/ })).not.toBeChecked();
-    await page.locator('.markdown-settings summary').click();
+    await page.getByRole('button', { name: 'Command palette', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Command palette' });
+    await dialog.getByRole('combobox').fill('Disable GitHub alerts');
+    await dialog.getByRole('option', { name: 'Disable GitHub alerts', exact: true }).click();
+    await expect(dialog).toBeHidden();
+    await page.getByRole('button', { name: 'Command palette', exact: true }).click();
+    await dialog.getByRole('combobox').fill('Enable GitHub alerts');
+    await expect(dialog.getByRole('option', { name: 'Enable GitHub alerts', exact: true })).toContainText('Off');
+    await page.keyboard.press('Escape');
     const table = page.getByRole('button', { name: 'Table', exact: true });
     await table.focus();
     await expect(table).toBeFocused();
@@ -36,7 +42,6 @@ test('toolbar actions fit narrow screens and expanded settings leave room to edi
     await page.keyboard.press('Enter');
     await expect(page.getByRole('textbox', { name: 'Markdown source', exact: true })).toContainText('| Header |');
     await page.getByRole('button', { name: 'Command palette', exact: true }).click();
-    const dialog = page.getByRole('dialog', { name: 'Command palette' });
     await expect(dialog).toBeVisible();
     await page.setViewportSize({ width: 568, height: 320 });
     const footer = await page.locator('.command-footer').boundingBox();

@@ -131,14 +131,25 @@ test('extension settings change rendering and persist', async ({ page }) => {
     await expect(page.locator('[data-document] del')).toHaveText('old');
     await expect(page.locator('.katex')).toBeVisible();
     await expect(page.locator('.markdown-alert')).toContainText('Read this.');
-    await page.getByText('Markdown extensions', { exact: true }).click();
-    await page.getByRole('checkbox', { name: /^Math/ }).uncheck();
+    const dialog = page.getByRole('dialog', { name: 'Command palette' });
+    const runExtension = async (label: string) => {
+        await page.getByRole('button', { name: 'Command palette', exact: true }).click();
+        await dialog.getByRole('combobox').fill(label);
+        await dialog.getByRole('option', { name: label, exact: true }).click();
+        await expect(dialog).toBeHidden();
+    };
+    await runExtension('Disable Math');
     await expect(page.locator('.katex')).toHaveCount(0);
-    await page.getByRole('checkbox', { name: /^GitHub Markdown/ }).uncheck();
+    await runExtension('Disable GitHub Markdown');
     await expect(page.locator('[data-document] del')).toHaveCount(0);
     await page.reload();
-    await page.getByText('Markdown extensions', { exact: true }).click();
-    await expect(page.getByRole('checkbox', { name: /^Math/ })).not.toBeChecked();
+    await page.getByRole('button', { name: 'Command palette', exact: true }).click();
+    await dialog.getByRole('combobox').fill('Enable Math');
+    await expect(dialog.getByRole('option', { name: 'Enable Math', exact: true })).toContainText('Off');
+    await page.keyboard.press('Escape');
+    await preview(page);
+    await expect(page.locator('.katex')).toHaveCount(0);
+    await expect(page.locator('[data-document] del')).toHaveCount(0);
 });
 
 test('all diagram/chart templates render and invalid diagrams recover', async ({ page }) => {

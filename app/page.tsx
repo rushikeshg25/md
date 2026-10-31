@@ -9,7 +9,6 @@ import { buildHtmlDocument, renderedDocumentHtml, exportFilename } from '@/lib/e
 import { downloadFile } from '@/lib/storage';
 import { formatSelection } from '@/lib/editing';
 import { Editor, type EditorStats } from '@/components/Editor';
-import { MarkdownSettings } from '@/components/MarkdownSettings';
 import { Preview } from '@/components/Preview';
 import { Toolbar } from '@/components/Toolbar';
 import { StatusBar } from '@/components/StatusBar';
@@ -103,7 +102,6 @@ export default function Home() {
                     onExportHtml={handleExportHtml} onPrint={handlePrint} layout={effectiveLayout} onLayoutChange={setLayout} onReadingMode={() => setReadingMode(true)}
                     isNarrow={isNarrow} onSearch={handleSearch} theme={preferences.theme} onThemeChange={theme => updatePreferences({ theme })}
                     toggleZenMode={() => setZenMode(true)} openCommandPalette={() => setCommandPaletteOpen(true)} />
-                <MarkdownSettings extensions={preferences.extensions} onChange={extensions => updatePreferences({ extensions })} />
             </div>}
             {readingMode && <div className="flex shrink-0 justify-end px-4 py-2 print:hidden">
                 <button ref={exitReadingButton} onClick={exitReadingMode} className="rounded border border-divider bg-surface px-3 py-2 text-sm text-content" title="Exit reading mode (Esc)">Exit reading mode</button>
