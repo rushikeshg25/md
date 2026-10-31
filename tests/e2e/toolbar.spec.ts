@@ -1,17 +1,20 @@
 import { test, expect } from '@playwright/test';
 import { THEMES, THEME_LABELS, isDarkTheme } from '../../lib/preferences';
 
-// These widths include the smallest supported phone and the desktop breakpoint.
+// Include the phone, desktop, and single-row toolbar breakpoints.
 test('toolbar actions fit narrow screens and extensions stay accessible without a separate bar', async ({ page }, testInfo) => {
     await page.addInitScript(() => localStorage.setItem('markdown-editor-draft', JSON.stringify({
         filename: 'a-very-long-document-name-that-must-not-push-controls-offscreen.md',
         content: '# Responsive toolbar\n\nKeep the editor usable.',
     })));
     await page.goto('/');
-    for (const width of [320, 390, 768, 1280]) {
+    for (const width of [320, 390, 768, 1280, 1599, 1600, 1920]) {
         await page.setViewportSize({ width, height: 800 });
         await expect(page.getByRole('button', { name: 'Command palette', exact: true })).toBeVisible();
         await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        const maxHeight = width < 768 ? 190 : width < 1600 ? 90 : 48;
+        await expect.poll(async () => (await page.locator('.toolbar').boundingBox())!.height,
+            { message: `Compact toolbar height at ${width}px` }).toBeLessThanOrEqual(maxHeight);
         const bounds = await page.locator('.toolbar-file-actions button, .command-launch, .toolbar-selectors select').evaluateAll(elements => elements.map(element => {
             const rect = element.getBoundingClientRect();
             return { name: element.getAttribute('aria-label'), left: rect.left, right: rect.right };

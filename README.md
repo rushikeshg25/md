@@ -23,7 +23,7 @@ Write Markdown, preview it live, and export a finished document—all in your br
 3. Use **Insert…** for chart and Markdown examples. Use **Commands** (Ctrl/Cmd+K) to enable or disable Markdown extensions.
 4. Use **Save file** or **Download Markdown** to keep a copy. Choose **Export HTML** or **Print or save PDF** for a rendered document.
 
-The toolbar groups the filename and save status with file actions. The highlighted **Commands** button opens the command palette. The Insert, View, and Theme dropdowns sit alongside the formatting tools. On phones, controls stack and formatting tools scroll horizontally. Extension settings are available in the command palette without a separate toolbar row.
+The toolbar groups the filename and save status with file actions. The highlighted **Commands** button opens the command palette. The toolbar uses one compact row on screens at least 1600px wide, two rows on smaller desktops, and stacked touch controls on phones. Formatting tools scroll horizontally when needed; the Insert, View, and Theme dropdowns remain visible. Extension settings are available in the command palette without a separate toolbar row.
 
 ### Themes
 
@@ -150,7 +150,7 @@ On Linux, use `bunx playwright install --with-deps chromium firefox webkit` to i
 
 The Playwright suite starts a production server on **port 3100**, which must be free. It covers desktop Chromium/Firefox and mobile Chromium/WebKit profiles. Mobile profiles emulate device layouts; they are not physical-device tests. Failures retain traces in `test-results/`.
 
-Coverage includes document recovery, native input and undo, themes, Markdown extensions, diagrams, file operations, export, command-menu navigation, Reading/Zen modes, and responsive layouts. Toolbar checks cover widths from 320 to 1280 pixels, long filenames, extension commands, keyboard access to scrolled formatting tools, and command-button text contrast across themes. [GitHub Actions](.github/workflows/checks.yml) runs lint, type, unit, build, and browser checks on pushes and pull requests. See the [toolbar verification report](docs/toolbar-verification.md) for the latest local results and the [earlier verification notes](docs/verification.md) for the macOS WebKit compatibility workaround.
+Coverage includes document recovery, native input and undo, themes, Markdown extensions, diagrams, file operations, export, command-menu navigation, Reading/Zen modes, and responsive layouts. Toolbar checks cover widths from 320 to 1920 pixels, long filenames, extension commands, keyboard access to scrolled formatting tools, and command-button text contrast across themes. [GitHub Actions](.github/workflows/checks.yml) runs lint, type, unit, build, and browser checks on pushes and pull requests. See the [toolbar verification report](docs/toolbar-verification.md) for the latest local results and the [earlier verification notes](docs/verification.md) for the macOS WebKit compatibility workaround.
 
 ## Rendering boundaries
 
